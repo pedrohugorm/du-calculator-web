@@ -27,6 +27,16 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+
+    <script>
+        function scrollToBottom() {
+            document.documentElement.scrollTop = document.documentElement.scrollHeight;
+        }
+
+        function scrollToTop() {
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
 </body>
 
 </html>
