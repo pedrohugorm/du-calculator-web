@@ -1,0 +1,79 @@
+﻿@using DUCalculator.Web.Domain
+@using DUCalculator.Web.Domain.WeaponDamage
+
+@code
+{
+    private readonly WeaponDamageContext _context = AppState.Program.Context;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        AppState.OnUpdate += Update;
+    }
+
+    private void Update()
+    {
+        StateHasChanged();
+    }
+}
+
+<div class="container">
+    <form class="context-editor">
+        <div class="row">
+            <div class="form-group col space-bottom">
+                <label class="dark-bg">Simulation Delta Time:</label>
+                <input type="number" @bind="@_context.DeltaTime" class="form-control"/>
+            </div>
+        </div>
+        <div class="form-group space-bottom">
+            <label class="dark-bg">Target Resistances: </label>
+            <div class="dark-bg">
+                <div class="row">
+                    <div class="col">AM: <input type="number" @bind="@_context.DamageReceiver.AntimatterResistance" class="form-control"/></div>
+                    <div class="col">EM: <input type="number" @bind="@_context.DamageReceiver.ElectromagneticResistance" class="form-control"/></div>
+                </div>
+                <div class="row">
+                    <div class="col">KN: <input type="number" @bind="@_context.DamageReceiver.KineticResistance" class="form-control"/></div>
+                    <div class="col">TH: <input type="number" @bind="@_context.DamageReceiver.ThermicResistance" class="form-control"/></div>
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(_context.WeaponId) && _context.WeaponId != "null")
+        {
+            <div class="form-group space-bottom">
+                <label class="dark-bg">Loaded Weapon: @_context.WeaponId</label>
+                <div class="dark-bg">
+                    <div class="form-group">
+                        <label class="dark-bg">Base Damage:</label>
+                        <input type="number" @bind="@_context.BaseDamage" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="dark-bg">Cycle Time:</label>
+                        <input type="number" @bind="@_context.RateOfFire" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="dark-bg">Reload Time:</label>
+                        <input type="number" @bind="@_context.ReloadTime" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="dark-bg">Damage Types:</label>
+                        <label class="dark-bg">@string.Join(", ", _context.DamageTypes)</label>
+                    </div> 
+                </div>
+            </div>
+        }
+        
+        <div class="form-group space-bottom">
+            <label class="dark-bg">Ship State:</label>
+            
+            <ul>
+            @foreach (var g in _context.ShipState.Weapons.GroupBy(w => w.GetGroupId()))
+            {
+                <li>@g.Key: @g.Count()</li>
+            }
+            </ul>
+        </div>
+    </form>
+</div>

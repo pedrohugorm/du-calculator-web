@@ -1,0 +1,10 @@
+﻿.context-editor {
+}
+
+.context-editor .dark-bg {
+    color: rgba(255, 255, 255, 1);
+}
+
+.context-editor .space-bottom {
+    padding-bottom: 1em; 
+}

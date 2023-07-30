@@ -1,44 +1,65 @@
 ﻿@page "/"
 @page "/weapon-damage"
-@using DUCalculator.Web.Domain.Common
-@using DUCalculator.Web.Domain.WeaponDamage
+@using DUCalculator.Web.Domain
 
 <PageTitle>Weapon Damage</PageTitle>
 
 @code {
     private string _commandText = "";
-    private readonly WeaponDamageSubProgram _program = new(new WebConsoleOutputWriter());
     private string _output = "";
-    
+
     private void SendCommand()
     {
-        _program.ProcessCommand(_commandText);
+        AppState.Program.ProcessCommand(_commandText);
         _output += _commandText + Environment.NewLine;
-        _output += _program.Context.Console.Flush();
+        _output += AppState.Context.Console.Flush();
         _commandText = string.Empty;
+
+        AppState.NotifyUpdated();
     }
 
     private void Clear()
     {
         _output = "";
+
+        AppState.NotifyUpdated();
     }
 
     private void ShowHelp()
     {
-        _program.ProcessCommand("help");
-        _output = _program.Context.Console.Flush();
+        AppState.Program.ProcessCommand("help");
+        _output = AppState.Program.Context.Console.Flush();
+
+        AppState.NotifyUpdated();
     }
 
 }
 
 <div class="console-container">
-    <div class="console-output"><pre>@_output</pre></div>
+    <div class="console-output">
+        <div class="row">
+            <div class="col">
+                <pre>@_output</pre>
+            </div>
+            <div class="col-sm-4">
+                <ContextEditor/>
+            </div>
+        </div>
+    </div>
     <div class="console-input">
         <form @onsubmit="SendCommand">
-            <input type="text" placeholder="Command" @bind="_commandText"/>
-            <button type="submit" @onclick="SendCommand">Send</button>
-            <button type="button" @onclick="Clear">Clear</button>
-            <button type="button" @onclick="ShowHelp">Help</button>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="text" placeholder="Command" @bind="_commandText" class="form-control"/>
+                    </div>
+                    <div class="col-md-8">
+                        <button type="submit" @onclick="SendCommand" class="btn btn-primary">Send</button>
+                        <button type="button" @onclick="Clear" class="btn btn-secondary">Clear</button>
+                        <button type="button" @onclick="ShowHelp" class="btn btn-link">Help</button>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
 </div>
