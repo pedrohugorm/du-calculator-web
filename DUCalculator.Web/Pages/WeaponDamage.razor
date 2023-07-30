@@ -1,8 +1,17 @@
 ﻿@page "/"
 @page "/weapon-damage"
 @using DUCalculator.Web.Domain
+@inject IJSRuntime JS
 
 <PageTitle>Weapon Damage</PageTitle>
+
+@functions {
+
+    void ScrollToEnd()
+    {
+        
+    }
+}
 
 @code {
     private string _commandText = "";
@@ -15,12 +24,16 @@
         _output += AppState.Context.Console.Flush();
         _commandText = string.Empty;
 
+        JS.InvokeVoidAsync("scrollToBottom");
+
         AppState.NotifyUpdated();
     }
 
     private void Clear()
     {
         _output = "";
+        
+        JS.InvokeVoidAsync("scrollToTop");
 
         AppState.NotifyUpdated();
     }
@@ -29,6 +42,8 @@
     {
         AppState.Program.ProcessCommand("help");
         _output = AppState.Program.Context.Console.Flush();
+        
+        JS.InvokeVoidAsync("scrollToBottom");
 
         AppState.NotifyUpdated();
     }
@@ -63,3 +78,12 @@
         </form>
     </div>
 </div>
+<script>
+function scrollToBottom() {
+    document.documentElement.scrollTop = document.documentElement.scrollHeight;
+}
+
+function scrollToTop() {
+    document.documentElement.scrollTop = 0;
+}
+</script>
