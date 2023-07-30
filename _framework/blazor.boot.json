@@ -7,7 +7,7 @@
   "linkerEnabled": true,
   "resources": {
     "assembly": {
-      "DUCalculator.Web.dll": "sha256-xhucuaAHH3gp29Gp\/f\/e6kWgde\/bXNPyVOCZ5dUzxBc=",
+      "DUCalculator.Web.dll": "sha256-w7FXnjBU9ZaYXA\/PDGjaYDrwjdlW4Xny8tvHYhbDGdY=",
       "Microsoft.AspNetCore.Components.dll": "sha256-nYl4wwdyTDBgfzrZ8JCidbdaUXD4r6GKFr7gj6O+HwQ=",
       "Microsoft.AspNetCore.Components.Web.dll": "sha256-DV2utlSfbmk5eCmk2ZrF9LHaRiIPH7IPu9KpQSHWaFM=",
       "Microsoft.AspNetCore.Components.WebAssembly.dll": "sha256-I3hivE2GUCLdJhJ9KPcDlOvhCiiPRvVPj+IRM0sgm8o=",
