@@ -13,6 +13,7 @@
     private void SendCommand()
     {
         _program.ProcessCommand(_commandText);
+        _output += _commandText + Environment.NewLine;
         _output += _program.Context.Console.Flush();
         _commandText = string.Empty;
     }
