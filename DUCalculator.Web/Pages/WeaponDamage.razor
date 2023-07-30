@@ -1,0 +1,43 @@
+﻿@page "/"
+@page "/weapon-damage"
+@using DUCalculator.Web.Domain.Common
+@using DUCalculator.Web.Domain.WeaponDamage
+
+<PageTitle>Weapon Damage</PageTitle>
+
+@code {
+    private string _commandText = "";
+    private readonly WeaponDamageSubProgram _program = new(new WebConsoleOutputWriter());
+    private string _output = "";
+    
+    private void SendCommand()
+    {
+        _program.ProcessCommand(_commandText);
+        _output += _program.Context.Console.Flush();
+        _commandText = string.Empty;
+    }
+
+    private void Clear()
+    {
+        _output = "";
+    }
+
+    private void ShowHelp()
+    {
+        _program.ProcessCommand("help");
+        _output = _program.Context.Console.Flush();
+    }
+
+}
+
+<div class="console-container">
+    <div class="console-output"><pre>@_output</pre></div>
+    <div class="console-input">
+        <form @onsubmit="SendCommand">
+            <input type="text" placeholder="Command" @bind="_commandText"/>
+            <button type="submit" @onclick="SendCommand">Send</button>
+            <button type="button" @onclick="Clear">Clear</button>
+            <button type="button" @onclick="ShowHelp">Help</button>
+        </form>
+    </div>
+</div>
