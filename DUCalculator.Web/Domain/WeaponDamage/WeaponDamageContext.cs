@@ -36,8 +36,53 @@ public class WeaponDamageContext
     {
         WeaponId = "Missile L";
         ReloadTime = 33.8;
-        RateOfFire = 2.8;
+        RateOfFire = 2.81;
         BaseDamage = 149691;
+        WeaponCount = 4;
+        MagazineSize = 15;
+        DamageTypes = new List<IDamageType>
+        {
+            new AntimatterDamageType(),
+            new KineticDamageType(),
+        };
+    }
+    
+    public void LoadMissileMedium()
+    {
+        WeaponId = "Missile M";
+        ReloadTime = 33.8;
+        RateOfFire = 2.81;
+        BaseDamage = 105047;
+        WeaponCount = 4;
+        MagazineSize = 15;
+        DamageTypes = new List<IDamageType>
+        {
+            new AntimatterDamageType(),
+            new KineticDamageType(),
+        };
+    }
+    
+    public void LoadMissileSmall()
+    {
+        WeaponId = "Missile S";
+        ReloadTime = 33.8;
+        RateOfFire = 2.81;
+        BaseDamage = 73717;
+        WeaponCount = 4;
+        MagazineSize = 15;
+        DamageTypes = new List<IDamageType>
+        {
+            new AntimatterDamageType(),
+            new KineticDamageType(),
+        };
+    }
+    
+    public void LoadMissileXSmall()
+    {
+        WeaponId = "Missile XS";
+        ReloadTime = 33.8;
+        RateOfFire = 2.81;
+        BaseDamage = 51731;
         WeaponCount = 4;
         MagazineSize = 15;
         DamageTypes = new List<IDamageType>
@@ -76,6 +121,36 @@ public class WeaponDamageContext
             new KineticDamageType(),
         };
     }
+    
+    public void LoadCannonSmall()
+    {
+        WeaponId = "Cannon S";
+        ReloadTime = 4.2;
+        RateOfFire = 2.11;
+        BaseDamage = 25866;
+        WeaponCount = 6;
+        MagazineSize = 37;
+        DamageTypes = new List<IDamageType>
+        {
+            new ThermicDamageType(),
+            new KineticDamageType(),
+        };
+    }
+    
+    public void LoadCannonXSmall()
+    {
+        WeaponId = "Cannon XS";
+        ReloadTime = 4.2;
+        RateOfFire = 1.41;
+        BaseDamage = 12933;
+        WeaponCount = 6;
+        MagazineSize = 37;
+        DamageTypes = new List<IDamageType>
+        {
+            new ThermicDamageType(),
+            new KineticDamageType(),
+        };
+    }
 
     public void LoadRailGunLarge()
     {
@@ -92,12 +167,102 @@ public class WeaponDamageContext
         };
     }
     
+    public void LoadRailGunMedium()
+    {
+        WeaponId = "Railgun M";
+        ReloadTime = 14.1;
+        RateOfFire = 8.86;
+        BaseDamage = 135297;
+        WeaponCount = 4;
+        MagazineSize = 22;
+        DamageTypes = new List<IDamageType>
+        {
+            new AntimatterDamageType(),
+            new ElectromagneticDamageType(),
+        };
+    }
+    
+    public void LoadRailGunSmall()
+    {
+        WeaponId = "Railgun S";
+        ReloadTime = 14.1;
+        RateOfFire = 5.91;
+        BaseDamage = 67649;
+        WeaponCount = 4;
+        MagazineSize = 22;
+        DamageTypes = new List<IDamageType>
+        {
+            new AntimatterDamageType(),
+            new ElectromagneticDamageType(),
+        };
+    }
+    
+    public void LoadRailGunXSmall()
+    {
+        WeaponId = "Railgun XS";
+        ReloadTime = 14.1;
+        RateOfFire = 3.94;
+        BaseDamage = 33824;
+        WeaponCount = 4;
+        MagazineSize = 22;
+        DamageTypes = new List<IDamageType>
+        {
+            new AntimatterDamageType(),
+            new ElectromagneticDamageType(),
+        };
+    }
+    
     public void LoadLaserLarge()
     {
         WeaponId = "Laser L";
         ReloadTime = 8.4;
         RateOfFire = 6.64;
         BaseDamage = 135297;
+        WeaponCount = 5;
+        MagazineSize = 52;
+        DamageTypes = new List<IDamageType>
+        {
+            new ThermicDamageType(),
+            new ElectromagneticDamageType(),
+        };
+    }
+    
+    public void LoadLaserMedium()
+    {
+        WeaponId = "Laser M";
+        ReloadTime = 8.4;
+        RateOfFire = 4.43;
+        BaseDamage = 67649;
+        WeaponCount = 5;
+        MagazineSize = 52;
+        DamageTypes = new List<IDamageType>
+        {
+            new ThermicDamageType(),
+            new ElectromagneticDamageType(),
+        };
+    }
+    
+    public void LoadLaserSmall()
+    {
+        WeaponId = "Laser S";
+        ReloadTime = 8.4;
+        RateOfFire = 2.95;
+        BaseDamage = 33824;
+        WeaponCount = 5;
+        MagazineSize = 52;
+        DamageTypes = new List<IDamageType>
+        {
+            new ThermicDamageType(),
+            new ElectromagneticDamageType(),
+        };
+    }
+    
+    public void LoadLaserXSmall()
+    {
+        WeaponId = "Laser XS";
+        ReloadTime = 8.4;
+        RateOfFire = 1.97;
+        BaseDamage = 16912;
         WeaponCount = 5;
         MagazineSize = 52;
         DamageTypes = new List<IDamageType>
