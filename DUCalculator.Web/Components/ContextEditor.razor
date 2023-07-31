@@ -1,9 +1,12 @@
 ﻿@using DUCalculator.Web.Domain
 @using DUCalculator.Web.Domain.WeaponDamage
+@using DUCalculator.Web.Domain.WeaponDamage.Prefabs
 
 @code
 {
     private readonly WeaponDamageContext _context = AppState.Program.Context;
+    private readonly Dictionary<string, IContextPrefab> _prefabs = AppState.Prefabs;
+    private IContextPrefab? _selectedPrefab;
 
     protected override void OnInitialized()
     {
@@ -15,6 +18,28 @@
     private void Update()
     {
         StateHasChanged();
+    }
+
+
+    private void ChangePrefab(ChangeEventArgs obj)
+    {
+        if (obj.Value == null)
+        {
+            return;
+        }
+
+        _prefabs.TryGetValue(obj.Value!.ToString()!, out _selectedPrefab);
+    }
+
+    private void LoadPrefab()
+    {
+        _selectedPrefab?.Load(_context);
+
+        if (_selectedPrefab != null)
+        {
+            _context.Console.WriteLine($"{_selectedPrefab.Name} Loaded");
+            AppState.NotifyUpdated();
+        }
     }
 }
 
@@ -60,19 +85,40 @@
                     <div class="form-group">
                         <label class="dark-bg">Damage Types:</label>
                         <label class="dark-bg">@string.Join(", ", _context.DamageTypes)</label>
-                    </div> 
+                    </div>
                 </div>
             </div>
         }
-        
+
+        <div class="form-group space-bottom">
+            <label class="dark-bg">Prefabs:</label>
+
+            <div class="row">
+                <div class="col">
+                    <select class="form-control" @onchange="ChangePrefab">
+                        <option value="">Select a Prefab</option>
+                        <optgroup label="Weapons">
+                            @foreach (var item in _prefabs)
+                            {
+                                <option value="@item.Key">@item.Key</option>
+                            }
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-secondary" @onclick="LoadPrefab">Load</button>
+                </div>
+            </div>
+        </div>
+
         <div class="form-group space-bottom">
             <label class="dark-bg">Ship State:</label>
-            
+
             <ul>
-            @foreach (var g in _context.ShipState.Weapons.GroupBy(w => w.GetGroupId()))
-            {
-                <li>@g.Key: @g.Count()</li>
-            }
+                @foreach (var g in _context.ShipState.Weapons.GroupBy(w => w.GetGroupId()))
+                {
+                    <li>@g.Key: @g.Count()</li>
+                }
             </ul>
         </div>
     </form>

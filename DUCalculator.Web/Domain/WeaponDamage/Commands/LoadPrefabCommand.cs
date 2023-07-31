@@ -1,4 +1,6 @@
-﻿namespace DUCalculator.Web.Domain.WeaponDamage.Commands;
+﻿using DUCalculator.Web.Domain.WeaponDamage.Prefabs;
+
+namespace DUCalculator.Web.Domain.WeaponDamage.Commands;
 
 public class LoadPrefabCommand : IWeaponDamageCommand
 {
@@ -16,67 +18,67 @@ public class LoadPrefabCommand : IWeaponDamageCommand
         {
             case "cl":
             case "cannon_l":
-                context.LoadCannonLarge();
+                new CannonLargePrefab().Load(context);
                 break;
             case "cm":
             case "cannon_m":
-                context.LoadCannonMedium();
+                new CannonMediumPrefab().Load(context);
                 break;
             case "cs":
             case "cannon_s":
-                context.LoadCannonSmall();
+                new CannonSmallPrefab().Load(context);
                 break;
             case "cxs":
             case "cannon_xs":
-                context.LoadCannonXSmall();
+                new CannonXSmallPrefab().Load(context);
                 break;
             case "rl":
             case "rail_l":
-                context.LoadRailGunLarge();
+                new RailgunLargePrefab().Load(context);
                 break;
             case "rm":
             case "rail_m":
-                context.LoadRailGunMedium();
+                new RailgunMediumPrefab().Load(context);
                 break;
             case "rs":
             case "rail_s":
-                context.LoadRailGunSmall();
+                new RailgunSmallPrefab().Load(context);
                 break;
             case "rxs":
             case "rail_xs":
-                context.LoadRailGunXSmall();
+                new RailgunXSmallPrefab().Load(context);
                 break;
             case "ml":
             case "missile_l":
-                context.LoadMissileLarge();
+                new MissileLargePrefab().Load(context);
                 break;
             case "mm":
             case "missile_m":
-                context.LoadMissileMedium();
+                new MissileMediumPrefab().Load(context);
                 break;
             case "ms":
             case "missile_s":
-                context.LoadMissileSmall();
+                new MissileSmallPrefab().Load(context);
                 break;
             case "mxs":
             case "missile_xs":
-                context.LoadMissileXSmall();
+                new MissileXSmallPrefab().Load(context);
                 break;
             case "ll":
             case "laser_l":
-                context.LoadLaserLarge();
+                new LaserLargePrefab().Load(context);
                 break;
             case "lm":
             case "laser_m":
-                context.LoadLaserMedium();
+                new LaserMediumPrefab().Load(context);
                 break;
             case "ls":
             case "laser_s":
-                context.LoadLaserSmall();
+                new LaserSmallPrefab().Load(context);
                 break;
             case "lxs":
             case "laser_xs":
-                context.LoadLaserXSmall();
+                new LaserXSmallPrefab().Load(context);
                 break;
             default:
                 context.Console.WriteLine($"{prefabName} NOT FOUND");
