@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using DUCalculator.Web.Domain.Common;
+using DUCalculator.Web.Domain.LiveTrace;
 using DUCalculator.Web.Domain.WeaponDamage;
 using DUCalculator.Web.Domain.WeaponDamage.Prefabs;
 
@@ -14,8 +15,10 @@ public static class AppState
         OnUpdate?.Invoke();
     }
     
-    public static WeaponDamageSubProgram Program = new(new WebConsoleOutputWriter());
-    public static WeaponDamageContext Context => Program.Context;
+    public static WeaponDamageSubProgram WeaponDamage = new(new WebConsoleOutputWriter());
+    public static LiveTraceSubProgram LiveTrace = new(new WebConsoleOutputWriter());
+    public static WeaponDamageContext WeaponDamageContext => WeaponDamage.Context;
+    public static LiveTraceExecutionContext LiveTraceContext => LiveTrace.Context;
 
     public static Dictionary<string, IContextPrefab> Prefabs
         => Assembly.GetExecutingAssembly()

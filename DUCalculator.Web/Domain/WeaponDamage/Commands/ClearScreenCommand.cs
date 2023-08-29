@@ -8,6 +8,5 @@ public class ClearScreenCommand : IWeaponDamageCommand
 
     public void Execute(WeaponDamageContext context)
     {
-        Console.Clear();
     }
 }

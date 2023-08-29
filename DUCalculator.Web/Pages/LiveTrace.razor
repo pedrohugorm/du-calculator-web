@@ -1,9 +1,8 @@
-﻿@page "/"
-@page "/weapon-damage"
+﻿@page "/live-trace"
 @using DUCalculator.Web.Domain
 @inject IJSRuntime JS
 
-<PageTitle>Weapon Damage</PageTitle>
+<PageTitle>Live Trace</PageTitle>
 
 @functions {
 
@@ -19,9 +18,9 @@
 
     private void SendCommand()
     {
-        AppState.WeaponDamage.ProcessCommand(_commandText);
+        AppState.LiveTrace.ProcessCommand(_commandText);
         _output += _commandText + Environment.NewLine;
-        _output += AppState.WeaponDamageContext.Console.Flush();
+        _output += AppState.LiveTraceContext.Writer.Flush();
         _commandText = string.Empty;
 
         JS.InvokeVoidAsync("scrollToBottom");
@@ -40,8 +39,8 @@
 
     private void ShowHelp()
     {
-        AppState.WeaponDamage.ProcessCommand("help");
-        _output = AppState.WeaponDamage.Context.Console.Flush();
+        AppState.LiveTrace.ProcessCommand("help");
+        _output = AppState.LiveTraceContext.Writer.Flush();
         
         JS.InvokeVoidAsync("scrollToBottom");
 
@@ -54,9 +53,6 @@
         <div class="row">
             <div class="col">
                 <pre>@_output</pre>
-            </div>
-            <div class="col-sm-4">
-                <ContextEditor/>
             </div>
         </div>
     </div>
