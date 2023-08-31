@@ -2,10 +2,10 @@
 
 public class DamageReceiver
 {
-    private double _am;
-    private double _em;
-    private double _kn;
-    private double _th;
+    private double _am = 0.25;
+    private double _em = 0.25;
+    private double _kn = 0.25;
+    private double _th = 0.25;
     
     public double AntimatterResistance
     {
