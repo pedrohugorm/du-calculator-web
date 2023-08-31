@@ -34,6 +34,11 @@ public class LimitAmmoCommand : IWeaponDamageCommand
             return;
         }
 
+        Execute(context, ammoType!, ammoSize);
+    }
+
+    public void Execute(WeaponDamageContext context, AmmoType ammoType, int ammoSize)
+    {
         if (context.ShipState.AmmoContainer.ContainsKey(ammoType!))
         {
             context.ShipState.AmmoContainer.Remove(ammoType!);

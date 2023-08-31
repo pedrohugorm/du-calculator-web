@@ -1,5 +1,6 @@
 ﻿@using DUCalculator.Web.Domain
 @using DUCalculator.Web.Domain.WeaponDamage
+@using DUCalculator.Web.Domain.WeaponDamage.Commands
 @using DUCalculator.Web.Domain.WeaponDamage.Prefabs
 
 @code
@@ -40,6 +41,18 @@
             _context.Console.WriteLine($"{_selectedPrefab.Name} Loaded");
             AppState.NotifyUpdated();
         }
+    }
+
+    private void SetAmmoTypeLimit(MouseEventArgs args, AmmoType ammoType)
+    {
+        var command = new LimitAmmoCommand();
+        command.Execute(_context, ammoType, 0);
+    }
+    
+    private void SetAmmoTypeUnlimited(MouseEventArgs args, AmmoType ammoType)
+    {
+        var command = new ClearLimitAmmoCommand();
+        command.Execute(_context, ammoType);
     }
 }
 
@@ -120,22 +133,31 @@
                     <li>@g.Key: @g.Count()</li>
                 }
             </ul>
-            
+
             <label>Ammo Limits:</label>
-            <ul>
+            <div class="form-inline">
                 @foreach (var at in AmmoType.AllAmmoTypes)
                 {
                     var container = _context.ShipState.AmmoContainer;
-                    if (container.TryGetValue(at, out var value))
+                    if (container.TryGetValue(at, out _))
                     {
-                        <li><AmmoTypeLabel AmmoType="at" />: @value</li>
+                        <div>
+                            <label><AmmoTypeLabel AmmoType="at"/>:</label>
+                            <div class="input-group mb-2">
+                                <input type="number" @bind="container[at]" class="form-control"/>
+                                <button type="button" class="btn btn-secondary" @onclick="args => SetAmmoTypeUnlimited(args, at)">Set Unlimited</button>
+                            </div>
+                        </div>
                     }
-                    else if(_context.WeaponsAdded.Contains(at.WeaponId))
+                    else if (_context.WeaponsAdded.Contains(at.WeaponId))
                     {
-                        <li><AmmoTypeLabel AmmoType="at" />: Unlimited</li>
+                        <div class="mb-2">
+                            <label><AmmoTypeLabel AmmoType="at"/>:</label>
+                            Unlimited <button type="button" class="btn btn-secondary" @onclick="args => SetAmmoTypeLimit(args, at)">Set Limit</button>
+                        </div>
                     }
                 }
-            </ul>
+            </div>
         </div>
     </form>
 </div>

@@ -26,7 +26,12 @@ public class ClearLimitAmmoCommand : IWeaponDamageCommand
             return;
         }
 
-        context.ShipState.AmmoContainer.Remove(ammoType!);
+        Execute(context, ammoType!);
+    }
+
+    public void Execute(WeaponDamageContext context, AmmoType ammoType)
+    {
+        context.ShipState.AmmoContainer.Remove(ammoType);
         
         context.Console.WriteLine($"Ammo Limit for '{ammoType}' Cleared");
     }
