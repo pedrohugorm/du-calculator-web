@@ -65,7 +65,7 @@
             </div>
         </div>
 
-        @if (!string.IsNullOrEmpty(_context.WeaponId) && _context.WeaponId != "null")
+        @if (_context.WeaponId != null)
         {
             <div class="form-group space-bottom">
                 <label class="dark-bg">Loaded Weapon: @_context.WeaponId</label>
@@ -118,6 +118,22 @@
                 @foreach (var g in _context.ShipState.Weapons.GroupBy(w => w.GetGroupId()))
                 {
                     <li>@g.Key: @g.Count()</li>
+                }
+            </ul>
+            
+            <label>Ammo Limits:</label>
+            <ul>
+                @foreach (var at in AmmoType.AllAmmoTypes)
+                {
+                    var container = _context.ShipState.AmmoContainer;
+                    if (container.TryGetValue(at, out var value))
+                    {
+                        <li><AmmoTypeLabel AmmoType="at" />: @value</li>
+                    }
+                    else if(_context.WeaponsAdded.Contains(at.WeaponId))
+                    {
+                        <li><AmmoTypeLabel AmmoType="at" />: Unlimited</li>
+                    }
                 }
             </ul>
         </div>

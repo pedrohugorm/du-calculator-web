@@ -24,13 +24,25 @@ public class WeaponDamageContext
     public int MagazineSize { get; set; } = 0;
     public double TargetDamage { get; set; } = 200000000;
     public double DeltaTime { get; set; } = 0.1;
-    public string WeaponId { get; set; } = "null";
+    public WeaponId? WeaponId { get; set; }
     public DamageReceiver DamageReceiver { get; set; } = new();
-    public List<IDamageType> DamageTypes { get; set; } = new();
+    public List<DamageType> DamageTypes { get; set; } = new();
 
     public ShipState ShipState { get; set; } = new();
+    public HashSet<WeaponId> WeaponsAdded => ShipState.Weapons.Select(x => x.Id).ToHashSet(); 
 
     public string[] GetCommandPieces() => RawCommand.Split(' ', ';', '\t');
+
+    public bool IsSimulationDone()
+    {
+        var hasReachedDamageGoal = ShipState.TotalDamage >= TargetDamage;
+        
+        var ammoContainerEmpty = ShipState.AmmoContainer.Any() && ShipState.AmmoContainer.Sum(kvp => kvp.Value) == 0;
+        var allMagazinesEmpty = ShipState.Weapons.Sum(w => w.CurrentMagazine) == 0;
+        var noAmmoToShoot = allMagazinesEmpty && ammoContainerEmpty;
+        
+        return hasReachedDamageGoal || noAmmoToShoot;
+    }
     
     public override string ToString()
     {

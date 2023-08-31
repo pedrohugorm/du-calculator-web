@@ -1,9 +1,10 @@
 ﻿namespace DUCalculator.Web.Domain.WeaponDamage.Damage;
 
-public class ElectromagneticDamageType : IDamageType
+public class ElectromagneticDamageType : DamageType
 {
-    public double CalculateDamage(DamageReceiver receiver, double damage)
-        => damage * (1 - receiver.ElectromagneticResistance);
+    public override string Name => "Electromagnetic";
+    public override string Code => "EM";
 
-    public override string ToString() => "EM";
+    public override double CalculateDamage(DamageReceiver receiver, double damage)
+        => damage * (1 - receiver.ElectromagneticResistance);
 }

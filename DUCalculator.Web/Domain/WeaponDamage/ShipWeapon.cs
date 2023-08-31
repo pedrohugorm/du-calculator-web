@@ -4,13 +4,13 @@ namespace DUCalculator.Web.Domain.WeaponDamage;
 
 public class ShipWeapon
 {
-    public string Id { get; }
+    public WeaponId Id { get; }
     public double BaseDamage { get; }
     public double RateOfFire { get; }
     public double ReloadTime { get; }
     public int MagazineSize { get; }
     public int CurrentMagazine { get; set; }
-    public IDamageType DamageType { get; }
+    public DamageType DamageType { get; }
     public int AmmoSpent { get; set; }
     public int ReloadCount { get; set; }
 
@@ -27,15 +27,16 @@ public class ShipWeapon
     private double NoReloadDpsAccumulatedTime { get; set; }
     private double NoReloadDpsDamage { get; set; }
     private List<double> NoReloadDamagePerSecondList { get; set; } = new();
+    private AmmoType AmmoType { get; }
 
     public ShipWeapon(
-        string id,
+        WeaponId id,
         double baseDamage,
         double rateOfFire,
         double reloadTime,
         int magazineSize,
         int currentMagazine,
-        IDamageType damageType
+        DamageType damageType
     )
     {
         Id = id;
@@ -45,6 +46,7 @@ public class ShipWeapon
         MagazineSize = magazineSize;
         CurrentMagazine = currentMagazine;
         DamageType = damageType;
+        AmmoType = new AmmoType(Id, DamageType);
     }
 
     public void Tick(WeaponDamageContext context)
@@ -73,7 +75,21 @@ public class ShipWeapon
             if (AccumulatedTime >= ReloadTime)
             {
                 AccumulatedTime = 0;
-                CurrentMagazine = MagazineSize;
+
+                var hasAmmoInContainer = context.ShipState.TryToTakeAmmoTypeFromContainer(
+                    AmmoType,
+                    MagazineSize,
+                    out var availableAmmo
+                );
+
+                CurrentMagazine = availableAmmo;
+
+                // Doesn't leave reloading state if no ammo
+                if (!hasAmmoInContainer)
+                {
+                    return;
+                }
+                
                 IsReloading = false;
             }
             else

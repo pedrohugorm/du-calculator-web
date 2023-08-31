@@ -1,0 +1,6 @@
+﻿@using DUCalculator.Web.Domain.WeaponDamage.Damage
+@code {
+    [Parameter] public DamageType DamageType { get; set; }
+} 
+
+<span class="badge badge-dt-@DamageType.Code.ToLower()">@DamageType.Code</span>

@@ -1,9 +1,10 @@
 ﻿namespace DUCalculator.Web.Domain.WeaponDamage.Damage;
 
-public class ThermicDamageType : IDamageType
+public class ThermicDamageType : DamageType
 {
-    public double CalculateDamage(DamageReceiver receiver, double damage)
+    public override string Name => "Thermic";
+    public override string Code => "TH";
+
+    public override double CalculateDamage(DamageReceiver receiver, double damage)
         => damage * (1 - receiver.ThermicResistance);
-    
-    public override string ToString() => "TH";
 }

@@ -19,20 +19,28 @@ public class TickCommand : IWeaponDamageCommand
             context.Console.WriteLine("Will never do Damage: Resistances are 100% (>=1) OR Multiplier is Zero OR No Weapons added");
             return;
         }
-        
+
+        var iterations = 0;
         while (true)
         {
             context.ShipState.Tick(context);
+            iterations++;
 
-            if (context.ShipState.TotalDamage >= context.TargetDamage)
+            if (context.IsSimulationDone())
             {
+                break;
+            }
+
+            if (sw.Elapsed > TimeSpan.FromSeconds(3))
+            {
+                context.Console.WriteLine("Simulation Timeout");
                 break;
             }
         }
         
         sw.Stop();
 
-        context.Console.WriteLine($"Finished Simulating. Took = {sw.Elapsed}");
+        context.Console.WriteLine($"Finished Simulating. Took = {sw.Elapsed}. Iterations = {iterations}");
         
         var printReport = new PrintShipCommand();
         printReport.Execute(context);

@@ -6,6 +6,7 @@ namespace DUCalculator.Web.Domain.WeaponDamage;
 public class ShipState
 {
     public List<ShipWeapon> Weapons { get; } = new();
+    public Dictionary<AmmoType, int> AmmoContainer { get; private set; } = new();
 
     public double TotalDamage { get; set; }
     public double TickDamage { get; set; }
@@ -13,11 +14,17 @@ public class ShipState
 
     public void AddWeapons(WeaponDamageContext context)
     {
+        if (context.WeaponId == null)
+        {
+            context.Console.WriteLine("No Weapon Loaded.");
+            return;
+        }
+        
         for (var i = 0; i < context.WeaponCount; i++)
         {
             var damageTypeIndex = i % context.DamageTypes.Count;
 
-            IDamageType damageType;
+            DamageType damageType;
             try
             {
                 damageType = context.DamageTypes[damageTypeIndex];
@@ -40,6 +47,28 @@ public class ShipState
                 )
             );
         }
+    }
+
+    /// <summary>
+    /// Retrieves ammo int the container if there are limits or the mag size if no limits (no key)
+    /// </summary>
+    /// <param name="ammoType"></param>
+    /// <param name="magazineSize"></param>
+    /// <param name="ammoTaken"></param>
+    /// <returns></returns>
+    public bool TryToTakeAmmoTypeFromContainer(AmmoType ammoType, int magazineSize, out int ammoTaken)
+    {
+        if (AmmoContainer.TryGetValue(ammoType, out var availableAmmo))
+        {
+            var ammoToTake = Math.Min(magazineSize, availableAmmo);
+            AmmoContainer[ammoType] -= ammoToTake;
+
+            ammoTaken = ammoToTake;
+            return ammoTaken > 0;
+        }
+
+        ammoTaken = magazineSize;
+        return true;
     }
 
     public void Tick(WeaponDamageContext context)

@@ -10,7 +10,9 @@ public class LoadPrefabCommand : IWeaponDamageCommand
     
     public void Execute(WeaponDamageContext context)
     {
-        var prefabName = context.RawCommand.Replace("load ", "")
+        var prefabName = context.RawCommand
+            .Replace("load ", "")
+            .Replace("loadprefab ", "")
             .ToLower()
             .Trim();
 

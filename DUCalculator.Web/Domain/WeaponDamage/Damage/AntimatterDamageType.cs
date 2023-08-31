@@ -1,9 +1,10 @@
 ﻿namespace DUCalculator.Web.Domain.WeaponDamage.Damage;
 
-public class AntimatterDamageType : IDamageType
+public class AntimatterDamageType : DamageType
 {
-    public double CalculateDamage(DamageReceiver receiver, double damage) 
+    public override string Name => "Anti-Matter";
+    public override string Code => "AM";
+
+    public override double CalculateDamage(DamageReceiver receiver, double damage) 
         => damage * (1 - receiver.AntimatterResistance);
-    
-    public override string ToString() => "AM";
 }

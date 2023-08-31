@@ -1,9 +1,10 @@
 ﻿namespace DUCalculator.Web.Domain.WeaponDamage.Damage;
 
-public class KineticDamageType : IDamageType
+public class KineticDamageType : DamageType
 {
-    public double CalculateDamage(DamageReceiver receiver, double damage)
+    public override string Name => "Kinetic";
+    public override string Code => "KN";
+
+    public override double CalculateDamage(DamageReceiver receiver, double damage)
         => damage * (1 - receiver.KineticResistance);
-    
-    public override string ToString() => "KN";
 }

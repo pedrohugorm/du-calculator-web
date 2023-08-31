@@ -30,7 +30,7 @@ public class DamageReceiver
         get => _th;
     }
 
-    public double ResistDamage(IDamageType damageType, double damage) 
+    public double ResistDamage(DamageType damageType, double damage) 
         => damageType.CalculateDamage(this, damage);
 
     public void LoadCannonResistances()

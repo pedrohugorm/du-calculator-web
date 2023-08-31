@@ -1,0 +1,7 @@
+﻿@using DUCalculator.Web.Domain.WeaponDamage
+
+@code {
+    [Parameter] public AmmoType AmmoType { get; set; }
+}
+
+<span>@AmmoType.WeaponId.WeaponType.Name @AmmoType.WeaponId.SizeType.Code <DamageTypeBadge DamageType="AmmoType.DamageType"></DamageTypeBadge></span>
