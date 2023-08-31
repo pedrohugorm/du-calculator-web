@@ -60,15 +60,32 @@ public class ShipState
     {
         if (AmmoContainer.TryGetValue(ammoType, out var availableAmmo))
         {
-            var ammoToTake = Math.Min(magazineSize, availableAmmo);
-            AmmoContainer[ammoType] -= ammoToTake;
+            ammoTaken = Math.Min(magazineSize, availableAmmo);
+            AmmoContainer[ammoType] -= ammoTaken;
 
-            ammoTaken = ammoToTake;
             return ammoTaken > 0;
         }
 
         ammoTaken = magazineSize;
         return true;
+    }
+    
+    /// <summary>
+    /// Checks if the container has any ammo of a given type.
+    /// If no limits specified - it's unlimited
+    /// </summary>
+    /// <param name="ammoType"></param>
+    /// <param name="magazineSize"></param>
+    /// <param name="ammoTaken"></param>
+    /// <returns></returns>
+    public bool HasAmmoTypeInContainer(AmmoType ammoType)
+    {
+        if (AmmoContainer.TryGetValue(ammoType, out var availableAmmo))
+        {
+            return availableAmmo > 0;
+        }
+
+        return true; // unlimited
     }
 
     public void Tick(WeaponDamageContext context)

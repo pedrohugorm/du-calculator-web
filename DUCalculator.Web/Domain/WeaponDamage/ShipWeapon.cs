@@ -79,10 +79,10 @@ public class ShipWeapon
                 var hasAmmoInContainer = context.ShipState.TryToTakeAmmoTypeFromContainer(
                     AmmoType,
                     MagazineSize,
-                    out var availableAmmo
+                    out var ammoTaken
                 );
 
-                CurrentMagazine = availableAmmo;
+                CurrentMagazine = ammoTaken;
 
                 // Doesn't leave reloading state if no ammo
                 if (!hasAmmoInContainer)
@@ -103,6 +103,11 @@ public class ShipWeapon
 
         if (CurrentMagazine <= 0)
         {
+            if (!context.ShipState.HasAmmoTypeInContainer(AmmoType))
+            {
+                return;
+            }
+            
             IsReloading = true;
             ReloadCount++;
             AccumulatedTime = 0;
