@@ -9,6 +9,27 @@
 .context-editor .space-bottom[b-9v2vsimtyg] {
     padding-bottom: 1em; 
 }
+/* /Components/DamageTypeBadge.razor.rz.scp.css */
+
+.badge-dt-am[b-45eibk3mec] {
+    background-color: purple;
+    color: white;
+}
+
+.badge-dt-em[b-45eibk3mec] {
+    background-color: blue;
+    color: white;
+}
+
+.badge-dt-kn[b-45eibk3mec] {
+    background-color: yellow;
+    color: black;
+}
+
+.badge-dt-th[b-45eibk3mec] {
+    background-color: red;
+    color: white;
+}
 /* /Pages/LiveTrace.razor.rz.scp.css */
 
 .console-container[b-xzm5rhbut1] {
