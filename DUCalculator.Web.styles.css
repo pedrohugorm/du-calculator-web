@@ -56,6 +56,34 @@
 .space-bottom[b-69b3xevm99] {
     padding-bottom: 1em;
 }
+
+.waypoint-line[b-69b3xevm99] {
+    margin-bottom: 4px;
+}
+
+.waypoint-line .waypoint-position[b-69b3xevm99] {
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    background-color: rgba(0,0,0, 0.4);
+    padding: 4px;
+    border-radius: 2px;
+}
+
+.waypoint-line .waypoint-position:hover[b-69b3xevm99] {
+    text-decoration: underline;
+}
+
+.waypoint-line .waypoint-name[b-69b3xevm99] {
+    cursor: pointer;
+}
+
+.waypoint-line .copied-check[b-69b3xevm99] {
+    background-color: lawngreen;
+    color: black;
+    border-radius: 2px;
+    padding: 4px;
+}
 /* /Pages/LiveTrace.razor.rz.scp.css */
 
 .console-container[b-xzm5rhbut1] {
