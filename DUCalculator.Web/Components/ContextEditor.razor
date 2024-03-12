@@ -5,7 +5,7 @@
 
 @code
 {
-    private readonly WeaponDamageContext _context = AppState.WeaponDamage.Context;
+    private WeaponDamageContext Context => AppState.WeaponDamageContext;
     private readonly Dictionary<string, IContextPrefab> _prefabs = AppState.Prefabs;
     private IContextPrefab? _selectedPrefab;
 
@@ -21,7 +21,6 @@
         StateHasChanged();
     }
 
-
     private void ChangePrefab(ChangeEventArgs obj)
     {
         if (obj.Value == null)
@@ -34,11 +33,11 @@
 
     private void LoadPrefab()
     {
-        _selectedPrefab?.Load(_context);
+        _selectedPrefab?.Load(Context);
 
         if (_selectedPrefab != null)
         {
-            _context.Console.WriteLine($"{_selectedPrefab.Name} Loaded");
+            Context.Console.WriteLine($"{_selectedPrefab.Name} Loaded");
             AppState.NotifyUpdated();
         }
     }
@@ -46,13 +45,13 @@
     private void SetAmmoTypeLimit(MouseEventArgs args, AmmoType ammoType)
     {
         var command = new LimitAmmoCommand();
-        command.Execute(_context, ammoType, 0);
+        command.Execute(Context, ammoType, 0);
     }
     
     private void SetAmmoTypeUnlimited(MouseEventArgs args, AmmoType ammoType)
     {
         var command = new ClearLimitAmmoCommand();
-        command.Execute(_context, ammoType);
+        command.Execute(Context, ammoType);
     }
 }
 
@@ -61,43 +60,43 @@
         <div class="row">
             <div class="form-group col space-bottom">
                 <label class="dark-bg">Simulation Delta Time:</label>
-                <input type="number" @bind="@_context.DeltaTime" class="form-control"/>
+                <input type="number" @bind="@Context.DeltaTime" class="form-control"/>
             </div>
         </div>
         <div class="form-group space-bottom">
             <label class="dark-bg">Target Resistances: </label>
             <div class="dark-bg">
                 <div class="row">
-                    <div class="col">AM: <input type="number" @bind="@_context.DamageReceiver.AntimatterResistance" class="form-control"/></div>
-                    <div class="col">EM: <input type="number" @bind="@_context.DamageReceiver.ElectromagneticResistance" class="form-control"/></div>
+                    <div class="col">AM: <input type="number" @bind="@Context.DamageReceiver.AntimatterResistance" class="form-control"/></div>
+                    <div class="col">EM: <input type="number" @bind="@Context.DamageReceiver.ElectromagneticResistance" class="form-control"/></div>
                 </div>
                 <div class="row">
-                    <div class="col">KN: <input type="number" @bind="@_context.DamageReceiver.KineticResistance" class="form-control"/></div>
-                    <div class="col">TH: <input type="number" @bind="@_context.DamageReceiver.ThermicResistance" class="form-control"/></div>
+                    <div class="col">KN: <input type="number" @bind="@Context.DamageReceiver.KineticResistance" class="form-control"/></div>
+                    <div class="col">TH: <input type="number" @bind="@Context.DamageReceiver.ThermicResistance" class="form-control"/></div>
                 </div>
             </div>
         </div>
 
-        @if (_context.WeaponId != null)
+        @if (Context.WeaponId != null)
         {
             <div class="form-group space-bottom">
-                <label class="dark-bg">Loaded Weapon: @_context.WeaponId</label>
+                <label class="dark-bg">Loaded Weapon: @Context.WeaponId</label>
                 <div class="dark-bg">
                     <div class="form-group">
                         <label class="dark-bg">Base Damage:</label>
-                        <input type="number" @bind="@_context.BaseDamage" class="form-control"/>
+                        <input type="number" @bind="@Context.BaseDamage" class="form-control"/>
                     </div>
                     <div class="form-group">
                         <label class="dark-bg">Cycle Time:</label>
-                        <input type="number" @bind="@_context.RateOfFire" class="form-control"/>
+                        <input type="number" @bind="@Context.RateOfFire" class="form-control"/>
                     </div>
                     <div class="form-group">
                         <label class="dark-bg">Reload Time:</label>
-                        <input type="number" @bind="@_context.ReloadTime" class="form-control"/>
+                        <input type="number" @bind="@Context.ReloadTime" class="form-control"/>
                     </div>
                     <div class="form-group">
                         <label class="dark-bg">Damage Types:</label>
-                        <label class="dark-bg">@string.Join(", ", _context.DamageTypes)</label>
+                        <label class="dark-bg">@string.Join(", ", Context.DamageTypes)</label>
                     </div>
                 </div>
             </div>
@@ -128,7 +127,7 @@
             <label class="dark-bg">Ship State:</label>
 
             <ul>
-                @foreach (var g in _context.ShipState.Weapons.GroupBy(w => w.GetGroupId()))
+                @foreach (var g in Context.ShipState.Weapons.GroupBy(w => w.GetGroupId()))
                 {
                     <li>@g.Key: @g.Count()</li>
                 }
@@ -138,7 +137,7 @@
             <div class="form-inline">
                 @foreach (var at in AmmoType.AllAmmoTypes)
                 {
-                    var container = _context.ShipState.AmmoContainer;
+                    var container = Context.ShipState.AmmoContainer;
                     if (container.TryGetValue(at, out _))
                     {
                         <div>
@@ -149,7 +148,7 @@
                             </div>
                         </div>
                     }
-                    else if (_context.WeaponsAdded.Contains(at.WeaponId))
+                    else if (Context.WeaponsAdded.Contains(at.WeaponId))
                     {
                         <div class="mb-2">
                             <label><AmmoTypeLabel AmmoType="at"/>:</label>

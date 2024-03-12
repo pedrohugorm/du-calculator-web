@@ -14,10 +14,18 @@ public static class AppState
     {
         OnUpdate?.Invoke();
     }
+
+    public static int ContextNumber = 0;
     
-    public static WeaponDamageSubProgram WeaponDamage = new(new WebConsoleOutputWriter());
+    public static WeaponDamageSubProgram WeaponDamage = new();
     public static LiveTraceSubProgram LiveTrace = new(new WebConsoleOutputWriter());
-    public static WeaponDamageContext WeaponDamageContext => WeaponDamage.Context;
+
+    public static WeaponDamageContext WeaponDamageContext => WeaponDamageContextDictionary[ContextNumber];
+    public static Dictionary<int, WeaponDamageContext> WeaponDamageContextDictionary = new()
+    {
+        {0, new WeaponDamageContext(new WebConsoleOutputWriter())}
+    };
+    
     public static LiveTraceExecutionContext LiveTraceContext => LiveTrace.Context;
 
     public static Dictionary<string, IContextPrefab> Prefabs

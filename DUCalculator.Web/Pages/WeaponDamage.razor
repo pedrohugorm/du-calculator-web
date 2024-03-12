@@ -19,7 +19,7 @@
 
     private void SendCommand()
     {
-        AppState.WeaponDamage.ProcessCommand(_commandText);
+        AppState.WeaponDamage.ProcessCommand(_commandText, AppState.WeaponDamageContext);
         _output += _commandText + Environment.NewLine;
         _output += AppState.WeaponDamageContext.Console.Flush();
         _commandText = string.Empty;
@@ -40,8 +40,8 @@
 
     private void ShowHelp()
     {
-        AppState.WeaponDamage.ProcessCommand("help");
-        _output = AppState.WeaponDamage.Context.Console.Flush();
+        AppState.WeaponDamage.ProcessCommand("help", AppState.WeaponDamageContext);
+        _output = AppState.WeaponDamageContext.Console.Flush();
         
         JS.InvokeVoidAsync("scrollToBottom");
 
