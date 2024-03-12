@@ -40,8 +40,8 @@ public class HexGridGenerator : IHexGridGenerator
             {
                 gridPositions.Add(
                     new WaypointLine(
-                        new Waypoint($"A{waypointNumber}", nCenter.Vector3ToPosition()),
-                        new Waypoint($"B{waypointNumber}", center.Vector3ToPosition())
+                        new Waypoint($"B{waypointNumber}", nCenter.Vector3ToPosition()),
+                        new Waypoint($"A{waypointNumber}", center.Vector3ToPosition())
                     ).Reversed(settings.ReverseOrder)
                 );
             }

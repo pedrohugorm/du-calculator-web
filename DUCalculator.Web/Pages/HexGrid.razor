@@ -15,8 +15,9 @@
     private float _hexSize = 3.35f;
     private string _wpColor = "FF10F0";
     private string _output = "";
+    private bool _showExportList = false;
     private bool _reverseOrder = true;
-    
+
     private List<HexGridGenerator.WaypointLine> _waypointLines = new();
     private Dictionary<string, bool> _copiedWaypoints = new();
 
@@ -67,14 +68,14 @@
                 @foreach (var wpl in _waypointLines)
                 {
                     <div class="waypoint-line">
-                        <span class="waypoint-name">@wpl.StartWaypoint.Name</span> = 
+                        <span class="waypoint-name">@wpl.StartWaypoint.Name</span> =
                         <a @onclick="args => Copy(args, wpl.StartWaypoint)" href="javascript:void(0)" title="click to copy @wpl.StartWaypoint.Name" class="waypoint-position">@wpl.StartWaypoint.Position</a>
                         @if (_copiedWaypoints.ContainsKey(wpl.StartWaypoint.Name))
                         {
                             <span class="copied-check">&#10003;</span>
                         }
                         <span> &#8594; </span>
-                        <span class="waypoint-name">@wpl.EndWaypoint.Name</span> = 
+                        <span class="waypoint-name">@wpl.EndWaypoint.Name</span> =
                         <a @onclick="args => Copy(args, wpl.EndWaypoint)" href="javascript:void(0)" title="click to copy @wpl.EndWaypoint.Name" class="waypoint-position">@wpl.EndWaypoint.Position</a>
                         @if (_copiedWaypoints.ContainsKey(wpl.EndWaypoint.Name))
                         {
@@ -98,6 +99,17 @@ db.setStringValue('SagaRoutes', sagaDbValue);
 db.setStringValue('savemarks', foxDbValue);
             </pre>
         </div>
+        @if (_showExportList)
+        {
+            <div class="row">
+                <pre>
+                @foreach (var wp in _waypointLines.ToWaypointList().Select(x => $"{x.Name} = {x.Position}\n"))
+                {
+                    @wp
+                }
+                </pre>
+            </div>
+        }
     </div>
     <div class="console-input">
         <form @onsubmit="Calculate">
@@ -134,13 +146,13 @@ db.setStringValue('savemarks', foxDbValue);
                     <div class="col-2">
                         <div class="form-group col space-bottom">
                             <label class="dark-bg">Waypoint Color:</label>
-                            <input type="text" @bind="_wpColor" class="form-control" style="border-color: #@_wpColor; border-width: 2px" />
+                            <input type="text" @bind="_wpColor" class="form-control" style="border-color: #@_wpColor; border-width: 2px"/>
                         </div>
                     </div>
                     <div class="col-2">
                         <div class="form-group col space-bottom">
                             <label class="dark-bg">Reverse Order:</label>
-                            <input type="checkbox" @bind="_reverseOrder" class="form-check" />
+                            <input type="checkbox" @bind="_reverseOrder" class="form-check"/>
                         </div>
                     </div>
                 </div>

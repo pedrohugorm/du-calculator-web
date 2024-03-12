@@ -16,21 +16,21 @@ public static class FoxWaypointExtensions
         }
 
         var waypointJsonObj = waypoints
-            .Select(x => new
+            .Select(wp => new
             {
-                name = x.Name,
-                position = x.Position.PositionToVector3()
+                name = wp.Name,
+                position = wp.Position.PositionToVector3()
             })
-            .Select(x => new
+            .Select(wp => new
             {
                 pos = new
                 {
-                    x = x.position.X,
-                    y = x.position.Y,
-                    z = x.position.Z,
+                    x = wp.position.X,
+                    y = wp.position.Y,
+                    z = wp.position.Z,
                 },
                 colour = colorHex,
-                x.name
+                wp.name
             })
             .ToArray();
 
