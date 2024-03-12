@@ -84,6 +84,15 @@
                 <pre>@_output</pre>
             </div>
         </div>
+        <div class="row">
+            <pre class="lua">
+local sagaDbValue = '@_waypointLines.ToSagaDataBankString()'
+local foxDbValue = '@_waypointLines.ToFoxDataBankString("FF10F0")'
+
+db.setStringValue('SagaRoutes', sagaDbValue);
+db.setStringValue('savemarks', foxDbValue);
+            </pre>
+        </div>
     </div>
     <div class="console-input">
         <form @onsubmit="Calculate">

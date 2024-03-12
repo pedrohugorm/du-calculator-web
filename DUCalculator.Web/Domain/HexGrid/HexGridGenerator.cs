@@ -31,8 +31,8 @@ public class HexGridGenerator : IHexGridGenerator
             {
                 gridPositions.Add(
                     new WaypointLine(
-                        new Waypoint($"S{waypointNumber}", center.Vector3ToPosition()),
-                        new Waypoint($"E{waypointNumber}", nCenter.Vector3ToPosition())
+                        new Waypoint($"A{waypointNumber}", center.Vector3ToPosition()),
+                        new Waypoint($"B{waypointNumber}", nCenter.Vector3ToPosition())
                     )
                 );
             }
@@ -40,11 +40,10 @@ public class HexGridGenerator : IHexGridGenerator
             {
                 gridPositions.Add(
                     new WaypointLine(
-                        new Waypoint($"S{waypointNumber}", nCenter.Vector3ToPosition()),
-                        new Waypoint($"E{waypointNumber}", center.Vector3ToPosition())
+                        new Waypoint($"A{waypointNumber}", nCenter.Vector3ToPosition()),
+                        new Waypoint($"B{waypointNumber}", center.Vector3ToPosition())
                     )
-                )
-                ;
+                );
             }
         }
 
@@ -143,7 +142,25 @@ public class HexGridGenerator : IHexGridGenerator
     public record Waypoint(
         string Name,
         string Position
-    );
+    )
+    {
+        public string ToSagaWaypointString()
+        {
+            var p = Position.PositionToVector3();
+            
+            return string.Join(
+                "",
+                "{n=\"",
+                Name,
+                "\",",
+                "c={",
+                $"x={p.X:F2},",
+                $"y={p.Y:F2},",
+                $"z={p.Z:F2}",
+                "}},"
+            );
+        }
+    };
 
     public record WaypointLine(
         Waypoint StartWaypoint,
