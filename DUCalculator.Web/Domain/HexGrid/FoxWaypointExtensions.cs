@@ -29,7 +29,7 @@ public static class FoxWaypointExtensions
                     y = x.position.Y,
                     z = x.position.Z,
                 },
-                color = colorHex,
+                colour = colorHex,
                 x.name
             })
             .ToArray();

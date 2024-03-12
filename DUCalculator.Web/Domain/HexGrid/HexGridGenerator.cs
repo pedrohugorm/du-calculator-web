@@ -119,8 +119,7 @@ public class HexGridGenerator : IHexGridGenerator
 
     private Vector3 ParsePositionString(string positionStr)
     {
-        var parts = positionStr.Replace("::pos{0,0,", "").Replace("}", "").Split(',');
-        return new Vector3(float.Parse(parts[0]), float.Parse(parts[1]), float.Parse(parts[2]));
+        return positionStr.PositionToVector3();
     }
 
     private float VectorLength(Vector3 vector)
