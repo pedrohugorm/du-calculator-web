@@ -1,6 +1,9 @@
 ﻿@page "/hex"
 @using DUCalculator.Web.Domain.HexGrid
 @using System.Text
+
+@inject IJSRuntime JS
+
 <PageTitle>Live Trace</PageTitle>
 
 @inject IHexGridGenerator HexGridGenerator;
@@ -11,6 +14,8 @@
     private int _numRings = 3;
     private float _hexSize = 3.35f;
     private string _output = "";
+    private List<HexGridGenerator.WaypointLine> _waypointLines = new();
+    private Dictionary<string, bool> _copiedWaypoints = new();
 
     private void Calculate()
     {
@@ -25,10 +30,7 @@
 
         var sb = new StringBuilder();
 
-        foreach (var position in result.Positions)
-        {
-            sb.AppendLine(position);
-        }
+        _waypointLines = result.WaypointLines;
 
         sb.AppendLine();
 
@@ -42,10 +44,38 @@
     }
 
 
+    private void Copy(MouseEventArgs _, HexGridGenerator.Waypoint waypoint)
+    {
+        JS.InvokeVoidAsync("copyToClipboard", waypoint.Position);
+        
+        _copiedWaypoints.TryAdd(waypoint.Name, true);
+    }
 }
 
 <div class="console-container">
     <div class="console-output">
+        <div class="row">
+            <div class="col">
+                @foreach (var wpl in _waypointLines)
+                {
+                    <div class="waypoint-line">
+                        <span class="waypoint-name">@wpl.StartWaypoint.Name</span> = 
+                        <a @onclick="args => Copy(args, wpl.StartWaypoint)" href="javascript:void(0)" title="click to copy @wpl.StartWaypoint.Name" class="waypoint-position">@wpl.StartWaypoint.Position</a>
+                        @if (_copiedWaypoints.ContainsKey(wpl.StartWaypoint.Name))
+                        {
+                            <span class="copied-check">&#10003;</span>
+                        }
+                        <span> &#8594; </span>
+                        <span class="waypoint-name">@wpl.EndWaypoint.Name</span> = 
+                        <a @onclick="args => Copy(args, wpl.EndWaypoint)" href="javascript:void(0)" title="click to copy @wpl.EndWaypoint.Name" class="waypoint-position">@wpl.EndWaypoint.Position</a>
+                        @if (_copiedWaypoints.ContainsKey(wpl.EndWaypoint.Name))
+                        {
+                            <span class="copied-check">&#10003;</span>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
         <div class="row">
             <div class="col">
                 <pre>@_output</pre>

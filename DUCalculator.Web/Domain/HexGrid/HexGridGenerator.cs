@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using DUCalculator.Web.Domain.LiveTrace;
 
 namespace DUCalculator.Web.Domain.HexGrid;
 
@@ -17,25 +18,33 @@ public class HexGridGenerator : IHexGridGenerator
         var dVec = nominalPoint - startPoint;
         var hexCenters3D = GenerateHexGrid3D(startPoint, nominalPoint, hexSize, settings.NumRings);
 
-        var gridPositions = new List<string>();
+        var gridPositions = new List<WaypointLine>();
 
         var points = hexCenters3D.Count;
         for (var i = 0; i < points; i++)
         {
             var center = hexCenters3D[i];
             var nCenter = center + dVec;
+            var waypointNumber = i + 1;
 
             if (i % 2 == 0)
             {
                 gridPositions.Add(
-                    $"Pipe s{i + 1} ::pos{{0,0,{center.X},{center.Y},{center.Z}}} -> e{i + 1} ::pos{{0,0,{nCenter.X},{nCenter.Y},{nCenter.Z}}}"
+                    new WaypointLine(
+                        new Waypoint($"S{waypointNumber}", center.Vector3ToPosition()),
+                        new Waypoint($"E{waypointNumber}", nCenter.Vector3ToPosition())
+                    )
                 );
             }
             else
             {
                 gridPositions.Add(
-                    $"Pipe s{i + 1} ::pos{{0,0,{nCenter.X},{nCenter.Y},{nCenter.Z}}} -> e{i + 1} ::pos{{0,0,{center.X},{center.Y},{center.Z}}}"
-                );
+                    new WaypointLine(
+                        new Waypoint($"S{waypointNumber}", nCenter.Vector3ToPosition()),
+                        new Waypoint($"E{waypointNumber}", center.Vector3ToPosition())
+                    )
+                )
+                ;
             }
         }
 
@@ -123,11 +132,21 @@ public class HexGridGenerator : IHexGridGenerator
     );
 
     public record Result(
-        List<string> Positions,
+        List<WaypointLine> WaypointLines,
         double SingleLineDistance,
         int NumberOfLines,
         double TotalDistance,
         double Scanning,
         double Reposition
+    );
+
+    public record Waypoint(
+        string Name,
+        string Position
+    );
+
+    public record WaypointLine(
+        Waypoint StartWaypoint,
+        Waypoint EndWaypoint
     );
 }

@@ -23,3 +23,31 @@
 .space-bottom {
     padding-bottom: 1em;
 }
+
+.waypoint-line {
+    margin-bottom: 4px;
+}
+
+.waypoint-line .waypoint-position {
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    background-color: rgba(0,0,0, 0.4);
+    padding: 4px;
+    border-radius: 2px;
+}
+
+.waypoint-line .waypoint-position:hover {
+    text-decoration: underline;
+}
+
+.waypoint-line .waypoint-name {
+    cursor: pointer;
+}
+
+.waypoint-line .copied-check {
+    background-color: lawngreen;
+    color: black;
+    border-radius: 2px;
+    padding: 4px;
+}
