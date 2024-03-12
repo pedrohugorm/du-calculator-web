@@ -84,6 +84,15 @@
     border-radius: 2px;
     padding: 4px;
 }
+
+.lua[b-69b3xevm99]
+{
+    border-radius: 2px;
+    padding: 4px;
+    background-color: rgba(0,0,0, 0.4);
+    overflow-x: scroll;
+    max-width: calc(100vw - 250px);
+}
 /* /Pages/LiveTrace.razor.rz.scp.css */
 
 .console-container[b-xzm5rhbut1] {
