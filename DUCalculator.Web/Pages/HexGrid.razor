@@ -1,0 +1,96 @@
+﻿@page "/hex"
+@using DUCalculator.Web.Domain.HexGrid
+@using System.Text
+<PageTitle>Live Trace</PageTitle>
+
+@inject IHexGridGenerator HexGridGenerator;
+
+@code {
+    private string _startPosition = "::pos{0,0,1058320,1238750,-3489237}";
+    private string _endPosition = "::pos{0,0,1058320,1238750,-89237}";
+    private int _numRings = 3;
+    private float _hexSize = 3.35f;
+    private string _output = "";
+
+    private void Calculate()
+    {
+        var result = HexGridGenerator.GenerateGrid(
+            new HexGridGenerator.Settings(
+                _startPosition,
+                _endPosition,
+                _numRings,
+                _hexSize
+                )
+            );
+
+        var sb = new StringBuilder();
+
+        foreach (var position in result.Positions)
+        {
+            sb.AppendLine(position);
+        }
+
+        sb.AppendLine();
+
+        sb.AppendLine($"Number of Lines = {result.NumberOfLines}");
+        sb.AppendLine($"Single Line Distance = {result.SingleLineDistance:N2}");
+        sb.AppendLine($"Total Distance = {result.TotalDistance:N2}");
+        sb.AppendLine($"Scanning = {result.Scanning:N2}");
+        sb.AppendLine($"Reposition = {result.Reposition:N2}");
+
+        _output = sb.ToString();
+    }
+
+
+}
+
+<div class="console-container">
+    <div class="console-output">
+        <div class="row">
+            <div class="col">
+                <pre>@_output</pre>
+            </div>
+        </div>
+    </div>
+    <div class="console-input">
+        <form @onsubmit="Calculate">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group col space-bottom">
+                            <div class="form-group col space-bottom">
+                                <label class="dark-bg">Start Position:</label>
+                                <input type="text" placeholder="Start Position" @bind="_startPosition" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group col space-bottom">
+                            <div class="form-group col space-bottom">
+                                <label class="dark-bg">End Position:</label>
+                                <input type="text" placeholder="End Position" @bind="_endPosition" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group col space-bottom">
+                            <label class="dark-bg">Number of Rings:</label>
+                            <input type="number" @bind="_numRings" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group col space-bottom">
+                            <label class="dark-bg">Hex Size:</label>
+                            <input type="text" @bind="_hexSize" class="form-control"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button type="submit" @onclick="Calculate" class="btn btn-primary">Calculate</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

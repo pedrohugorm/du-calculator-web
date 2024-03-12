@@ -1,4 +1,4 @@
-
+﻿
 .console-container {
     background-color: rgba(0, 0, 0, 0.9);
     padding: 1em;
@@ -11,12 +11,15 @@
 
 .console-output {
     flex: 1;
-    
+
     padding-bottom: 1em;
 }
 
 .console-input {
     position: sticky;
     bottom: 0;
-    
+}
+
+.space-bottom {
+    padding-bottom: 1em;
 }
