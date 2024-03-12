@@ -13,7 +13,10 @@
     private string _endPosition = "::pos{0,0,1058320,1238750,-89237}";
     private int _numRings = 3;
     private float _hexSize = 3.35f;
+    private string _wpColor = "FF10F0";
     private string _output = "";
+    private bool _reverseOrder = true;
+    
     private List<HexGridGenerator.WaypointLine> _waypointLines = new();
     private Dictionary<string, bool> _copiedWaypoints = new();
 
@@ -23,6 +26,7 @@
             new HexGridGenerator.Settings(
                 _startPosition,
                 _endPosition,
+                _reverseOrder,
                 _numRings,
                 _hexSize
                 )
@@ -53,6 +57,7 @@
             _copiedWaypoints.Remove(waypoint.Name);
         }
     }
+
 }
 
 <div class="console-container">
@@ -87,7 +92,7 @@
         <div class="row">
             <pre class="lua">
 local sagaDbValue = '@_waypointLines.ToSagaDataBankString()'
-local foxDbValue = '@_waypointLines.ToFoxDataBankString("FF10F0")'
+local foxDbValue = '@_waypointLines.ToFoxDataBankString(_wpColor)'
 
 db.setStringValue('SagaRoutes', sagaDbValue);
 db.setStringValue('savemarks', foxDbValue);
@@ -124,6 +129,18 @@ db.setStringValue('savemarks', foxDbValue);
                         <div class="form-group col space-bottom">
                             <label class="dark-bg">Hex Size:</label>
                             <input type="text" @bind="_hexSize" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group col space-bottom">
+                            <label class="dark-bg">Waypoint Color:</label>
+                            <input type="text" @bind="_wpColor" class="form-control" style="border-color: #@_wpColor; border-width: 2px" />
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group col space-bottom">
+                            <label class="dark-bg">Reverse Order:</label>
+                            <input type="checkbox" @bind="_reverseOrder" class="form-check" />
                         </div>
                     </div>
                 </div>

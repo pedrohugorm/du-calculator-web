@@ -33,7 +33,7 @@ public class HexGridGenerator : IHexGridGenerator
                     new WaypointLine(
                         new Waypoint($"A{waypointNumber}", center.Vector3ToPosition()),
                         new Waypoint($"B{waypointNumber}", nCenter.Vector3ToPosition())
-                    )
+                    ).Reversed(settings.ReverseOrder)
                 );
             }
             else
@@ -42,9 +42,14 @@ public class HexGridGenerator : IHexGridGenerator
                     new WaypointLine(
                         new Waypoint($"A{waypointNumber}", nCenter.Vector3ToPosition()),
                         new Waypoint($"B{waypointNumber}", center.Vector3ToPosition())
-                    )
+                    ).Reversed(settings.ReverseOrder)
                 );
             }
+        }
+
+        if (settings.ReverseOrder)
+        {
+            gridPositions.Reverse();
         }
 
         return new Result(
@@ -126,6 +131,7 @@ public class HexGridGenerator : IHexGridGenerator
     public record Settings(
         string StartPosition,
         string EndPosition,
+        bool ReverseOrder,
         int NumRings = 3,
         float HexSizeSu = 3.35f
     );
@@ -165,5 +171,19 @@ public class HexGridGenerator : IHexGridGenerator
     public record WaypointLine(
         Waypoint StartWaypoint,
         Waypoint EndWaypoint
-    );
+    )
+    {
+        public WaypointLine Reversed(bool reverse)
+        {
+            if (reverse)
+            {
+                return new WaypointLine(
+                    EndWaypoint,
+                    StartWaypoint
+                );
+            }
+
+            return this;
+        }
+    }
 }
