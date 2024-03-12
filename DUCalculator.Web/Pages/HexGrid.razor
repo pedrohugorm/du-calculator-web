@@ -47,8 +47,11 @@
     private void Copy(MouseEventArgs _, HexGridGenerator.Waypoint waypoint)
     {
         JS.InvokeVoidAsync("copyToClipboard", waypoint.Position);
-        
-        _copiedWaypoints.TryAdd(waypoint.Name, true);
+
+        if (!_copiedWaypoints.TryAdd(waypoint.Name, true))
+        {
+            _copiedWaypoints.Remove(waypoint.Name);
+        }
     }
 }
 
