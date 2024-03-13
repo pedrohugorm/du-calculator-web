@@ -4,9 +4,9 @@ namespace DUCalculator.Web.Domain.HexGrid;
 
 public static class SagaWaypointExtensions
 {
-    public static string ToSagaDataBankString(this List<HexGridGenerator.WaypointLine> waypointLines)
+    public static string ToSagaDataBankString(this IEnumerable<IHexGridGenerator.WaypointLine> waypointLines)
     {
-        List<HexGridGenerator.Waypoint> waypoints = new();
+        List<IHexGridGenerator.Waypoint> waypoints = new();
         
         foreach (var line in waypointLines)
         {

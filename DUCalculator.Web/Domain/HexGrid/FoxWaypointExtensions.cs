@@ -5,9 +5,9 @@ namespace DUCalculator.Web.Domain.HexGrid;
 
 public static class FoxWaypointExtensions
 {
-    public static string ToFoxDataBankString(this List<HexGridGenerator.WaypointLine> waypointLines, string colorHex)
+    public static string ToFoxDataBankString(this IEnumerable<IHexGridGenerator.WaypointLine> waypointLines, string colorHex)
     {
-        List<HexGridGenerator.Waypoint> waypoints = new();
+        List<IHexGridGenerator.Waypoint> waypoints = new();
         
         foreach (var line in waypointLines)
         {

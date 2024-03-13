@@ -2,9 +2,9 @@
 
 public static class OrderedWaypointExtensions
 {
-    public static List<HexGridGenerator.Waypoint> ToWaypointList(this List<HexGridGenerator.WaypointLine> waypointLines)
+    public static List<IHexGridGenerator.Waypoint> ToWaypointList(this IEnumerable<IHexGridGenerator.WaypointLine> waypointLines)
     {
-        List<HexGridGenerator.Waypoint> waypoints = new();
+        List<IHexGridGenerator.Waypoint> waypoints = new();
 
         foreach (var line in waypointLines)
         {

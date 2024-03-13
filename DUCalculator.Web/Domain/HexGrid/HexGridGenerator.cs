@@ -5,7 +5,7 @@ namespace DUCalculator.Web.Domain.HexGrid;
 
 public class HexGridGenerator : IHexGridGenerator
 {
-    public Result GenerateGrid(Settings settings)
+    public IHexGridGenerator.Result GenerateGrid(IHexGridGenerator.Settings settings)
     {
         // var startPointStr = "::pos{0,0,1058320,1238750,-3489237}";
         // var endPointStr = "::pos{0,0,1058320,1238750,-89237}";
@@ -18,7 +18,7 @@ public class HexGridGenerator : IHexGridGenerator
         var dVec = nominalPoint - startPoint;
         var hexCenters3D = GenerateHexGrid3D(startPoint, nominalPoint, hexSize, settings.NumRings);
 
-        var gridPositions = new List<WaypointLine>();
+        var gridPositions = new List<IHexGridGenerator.WaypointLine>();
 
         var points = hexCenters3D.Count;
         for (var i = 0; i < points; i++)
@@ -30,18 +30,18 @@ public class HexGridGenerator : IHexGridGenerator
             if (i % 2 == 0)
             {
                 gridPositions.Add(
-                    new WaypointLine(
-                        new Waypoint($"A{waypointNumber}", center.Vector3ToPosition()),
-                        new Waypoint($"B{waypointNumber}", nCenter.Vector3ToPosition())
+                    new IHexGridGenerator.WaypointLine(
+                        new IHexGridGenerator.Waypoint($"A{waypointNumber}", center.Vector3ToPosition()),
+                        new IHexGridGenerator.Waypoint($"B{waypointNumber}", nCenter.Vector3ToPosition())
                     ).Reversed(settings.ReverseOrder)
                 );
             }
             else
             {
                 gridPositions.Add(
-                    new WaypointLine(
-                        new Waypoint($"B{waypointNumber}", nCenter.Vector3ToPosition()),
-                        new Waypoint($"A{waypointNumber}", center.Vector3ToPosition())
+                    new IHexGridGenerator.WaypointLine(
+                        new IHexGridGenerator.Waypoint($"B{waypointNumber}", nCenter.Vector3ToPosition()),
+                        new IHexGridGenerator.Waypoint($"A{waypointNumber}", center.Vector3ToPosition())
                     ).Reversed(settings.ReverseOrder)
                 );
             }
@@ -52,7 +52,7 @@ public class HexGridGenerator : IHexGridGenerator
             gridPositions.Reverse();
         }
 
-        return new Result(
+        return new IHexGridGenerator.Result(
             gridPositions,
             0.000005 * VectorLength(dVec),
             points,
@@ -125,64 +125,5 @@ public class HexGridGenerator : IHexGridGenerator
     private float VectorLength(Vector3 vector)
     {
         return vector.Length();
-    }
-
-    public record Settings(
-        string StartPosition,
-        string EndPosition,
-        bool ReverseOrder,
-        int NumRings = 3,
-        float HexSizeSu = 3.35f
-    );
-
-    public record Result(
-        List<WaypointLine> WaypointLines,
-        double SingleLineDistance,
-        int NumberOfLines,
-        double TotalDistance,
-        double Scanning,
-        double Reposition
-    );
-
-    public record Waypoint(
-        string Name,
-        string Position
-    )
-    {
-        public string ToSagaWaypointString()
-        {
-            var p = Position.PositionToVector3();
-            
-            return string.Join(
-                "",
-                "{n=\"",
-                Name,
-                "\",",
-                "c={",
-                $"x={p.X:F2},",
-                $"y={p.Y:F2},",
-                $"z={p.Z:F2}",
-                "}},"
-            );
-        }
-    };
-
-    public record WaypointLine(
-        Waypoint StartWaypoint,
-        Waypoint EndWaypoint
-    )
-    {
-        public WaypointLine Reversed(bool reverse)
-        {
-            if (reverse)
-            {
-                return new WaypointLine(
-                    EndWaypoint,
-                    StartWaypoint
-                );
-            }
-
-            return this;
-        }
     }
 }

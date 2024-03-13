@@ -1,6 +1,7 @@
 ﻿@page "/hex"
 @using DUCalculator.Web.Domain.HexGrid
 @using System.Text
+@using System.Numerics
 
 @inject IJSRuntime JS
 
@@ -12,19 +13,19 @@
     private string _startPosition = "::pos{0,0,1058320,1238750,-3489237}";
     private string _endPosition = "::pos{0,0,1058320,1238750,-89237}";
     private int _numRings = 3;
-    private float _hexSize = 3.35f;
+    private float _hexSize = 3.464f;
     private string _wpColor = "FF10F0";
     private string _output = "";
-    private bool _showExportList = false;
+    private readonly bool _showExportList = true;
     private bool _reverseOrder = true;
 
-    private List<HexGridGenerator.WaypointLine> _waypointLines = new();
+    private IEnumerable<IHexGridGenerator.WaypointLine> _waypointLines = new List<IHexGridGenerator.WaypointLine>();
     private Dictionary<string, bool> _copiedWaypoints = new();
 
     private void Calculate()
     {
         var result = HexGridGenerator.GenerateGrid(
-            new HexGridGenerator.Settings(
+            new IHexGridGenerator.Settings(
                 _startPosition,
                 _endPosition,
                 _reverseOrder,
@@ -49,7 +50,7 @@
     }
 
 
-    private void Copy(MouseEventArgs _, HexGridGenerator.Waypoint waypoint)
+    private void Copy(MouseEventArgs _, IHexGridGenerator.Waypoint waypoint)
     {
         JS.InvokeVoidAsync("copyToClipboard", waypoint.Position);
 
@@ -87,18 +88,22 @@
         </div>
         <div class="row">
             <div class="col">
+                @Vector3.Cross(new Vector3(0,0,1), new Vector3(0.5f,0.5f,1))
                 <pre>@_output</pre>
             </div>
         </div>
-        <div class="row">
-            <pre class="lua">
+        @if (_waypointLines.Any())
+        {
+            <div class="row">
+                <pre class="lua">
 local sagaDbValue = '@_waypointLines.ToSagaDataBankString()'
 local foxDbValue = '@_waypointLines.ToFoxDataBankString(_wpColor)'
 
 db.setStringValue('SagaRoutes', sagaDbValue);
 db.setStringValue('savemarks', foxDbValue);
             </pre>
-        </div>
+            </div>
+        }
         @if (_showExportList)
         {
             <div class="row">
