@@ -1,4 +1,5 @@
 using System.Numerics;
+using DUCalculator.Web.Domain.Common;
 using DUCalculator.Web.Domain.LiveTrace;
 
 namespace DUCalculator.Web.Domain.HexGrid;
@@ -57,7 +58,9 @@ public class OffsetBasedHexGridGenerator : IHexGridGenerator
     {
         var refUp = new Vector3(0, 0, 1);
         var right = Vector3.Cross(forward, refUp);
+        right = right.NormalizeSafe(new Vector3(1, 0, 0));
         var up = Vector3.Cross(right, forward);
+        up = up.NormalizeSafe(new Vector3(0, 0, 1));
 
         var minHexNumber = CalculateTotalHexagons(ringNumber - 1);
         var result = new List<IHexGridGenerator.WaypointLine>();
