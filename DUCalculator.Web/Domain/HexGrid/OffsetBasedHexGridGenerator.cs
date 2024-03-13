@@ -30,7 +30,8 @@ public class OffsetBasedHexGridGenerator : IHexGridGenerator
                 ring, 
                 settings.HexSizeSu * suKm,
                 forward,
-                distance
+                distance,
+                settings.ReverseOrder
             );
         
             result.AddRange(ringResult);
@@ -38,6 +39,11 @@ public class OffsetBasedHexGridGenerator : IHexGridGenerator
 
         var totalHexes = CalculateTotalHexagons(settings.NumRings);
 
+        if (settings.ReverseOrder)
+        {
+            result.Reverse();
+        }
+        
         return new IHexGridGenerator.Result(
             result,
             distance,
@@ -53,7 +59,8 @@ public class OffsetBasedHexGridGenerator : IHexGridGenerator
         int ringNumber, 
         float hexSize, 
         Vector3 forward,
-        float distance
+        float distance,
+        bool reverse
     )
     {
         var globalRight = new Vector3(0, 1, 0);
@@ -84,7 +91,7 @@ public class OffsetBasedHexGridGenerator : IHexGridGenerator
                     new IHexGridGenerator.WaypointLine(
                         new IHexGridGenerator.Waypoint($"A{minHexNumber + i}", positionA.Vector3ToPosition(), "A"),
                         new IHexGridGenerator.Waypoint($"B{minHexNumber + i}", positionB.Vector3ToPosition(), "B")
-                    )
+                    ).Reversed(reverse)
                 );
             }
             else
@@ -93,11 +100,11 @@ public class OffsetBasedHexGridGenerator : IHexGridGenerator
                     new IHexGridGenerator.WaypointLine(
                         new IHexGridGenerator.Waypoint($"B{minHexNumber + i}", positionB.Vector3ToPosition(), "B"),
                         new IHexGridGenerator.Waypoint($"A{minHexNumber + i}", positionA.Vector3ToPosition(), "A")
-                    )
+                    ).Reversed(reverse)
                 );
             }
         }
-
+        
         return result;
     }
     
