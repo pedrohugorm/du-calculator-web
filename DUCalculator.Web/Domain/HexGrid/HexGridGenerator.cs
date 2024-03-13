@@ -31,8 +31,8 @@ public class HexGridGenerator : IHexGridGenerator
             {
                 gridPositions.Add(
                     new IHexGridGenerator.WaypointLine(
-                        new IHexGridGenerator.Waypoint($"A{waypointNumber}", center.Vector3ToPosition()),
-                        new IHexGridGenerator.Waypoint($"B{waypointNumber}", nCenter.Vector3ToPosition())
+                        new IHexGridGenerator.Waypoint($"A{waypointNumber}", center.Vector3ToPosition(), "A"),
+                        new IHexGridGenerator.Waypoint($"B{waypointNumber}", nCenter.Vector3ToPosition(), "B")
                     ).Reversed(settings.ReverseOrder)
                 );
             }
@@ -40,8 +40,8 @@ public class HexGridGenerator : IHexGridGenerator
             {
                 gridPositions.Add(
                     new IHexGridGenerator.WaypointLine(
-                        new IHexGridGenerator.Waypoint($"B{waypointNumber}", nCenter.Vector3ToPosition()),
-                        new IHexGridGenerator.Waypoint($"A{waypointNumber}", center.Vector3ToPosition())
+                        new IHexGridGenerator.Waypoint($"B{waypointNumber}", nCenter.Vector3ToPosition(), "B"),
+                        new IHexGridGenerator.Waypoint($"A{waypointNumber}", center.Vector3ToPosition(), "A")
                     ).Reversed(settings.ReverseOrder)
                 );
             }

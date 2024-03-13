@@ -18,8 +18,8 @@ public class OffsetBasedHexGridGenerator : IHexGridGenerator
         var result = new List<IHexGridGenerator.WaypointLine>
         {
             new(
-                new IHexGridGenerator.Waypoint("A1", fromPos.Vector3ToPosition()),
-                new IHexGridGenerator.Waypoint("B1", toPos.Vector3ToPosition())
+                new IHexGridGenerator.Waypoint("A1", fromPos.Vector3ToPosition(), "A"),
+                new IHexGridGenerator.Waypoint("B1", toPos.Vector3ToPosition(), "B")
             )
         };
 
@@ -56,11 +56,13 @@ public class OffsetBasedHexGridGenerator : IHexGridGenerator
         float distance
     )
     {
-        var refUp = new Vector3(0, 0, 1);
-        var right = Vector3.Cross(forward, refUp);
-        right = right.NormalizeSafe(new Vector3(1, 0, 0));
+        var globalRight = new Vector3(0, 1, 0);
+        var globalUp = new Vector3(0, 0, 1);
+        
+        var right = Vector3.Cross(forward, globalUp);
+        right = right.NormalizeSafe(globalRight);
         var up = Vector3.Cross(right, forward);
-        up = up.NormalizeSafe(new Vector3(0, 0, 1));
+        up = up.NormalizeSafe(globalUp);
 
         var minHexNumber = CalculateTotalHexagons(ringNumber - 1);
         var result = new List<IHexGridGenerator.WaypointLine>();
@@ -80,8 +82,8 @@ public class OffsetBasedHexGridGenerator : IHexGridGenerator
             {
                 result.Add(
                     new IHexGridGenerator.WaypointLine(
-                        new IHexGridGenerator.Waypoint($"A{minHexNumber + i}", positionA.Vector3ToPosition()),
-                        new IHexGridGenerator.Waypoint($"B{minHexNumber + i}", positionB.Vector3ToPosition())
+                        new IHexGridGenerator.Waypoint($"A{minHexNumber + i}", positionA.Vector3ToPosition(), "A"),
+                        new IHexGridGenerator.Waypoint($"B{minHexNumber + i}", positionB.Vector3ToPosition(), "B")
                     )
                 );
             }
@@ -89,8 +91,8 @@ public class OffsetBasedHexGridGenerator : IHexGridGenerator
             {
                 result.Add(
                     new IHexGridGenerator.WaypointLine(
-                        new IHexGridGenerator.Waypoint($"B{minHexNumber + i}", positionB.Vector3ToPosition()),
-                        new IHexGridGenerator.Waypoint($"A{minHexNumber + i}", positionA.Vector3ToPosition())
+                        new IHexGridGenerator.Waypoint($"B{minHexNumber + i}", positionB.Vector3ToPosition(), "B"),
+                        new IHexGridGenerator.Waypoint($"A{minHexNumber + i}", positionA.Vector3ToPosition(), "A")
                     )
                 );
             }

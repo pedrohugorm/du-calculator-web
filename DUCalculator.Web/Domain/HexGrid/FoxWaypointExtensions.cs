@@ -5,7 +5,11 @@ namespace DUCalculator.Web.Domain.HexGrid;
 
 public static class FoxWaypointExtensions
 {
-    public static string ToFoxDataBankString(this IEnumerable<IHexGridGenerator.WaypointLine> waypointLines, string colorHex)
+    public static string ToFoxDataBankString(
+        this IEnumerable<IHexGridGenerator.WaypointLine> waypointLines, 
+        string colorAHex,
+        string colorBHex
+    )
     {
         List<IHexGridGenerator.Waypoint> waypoints = new();
         
@@ -19,7 +23,8 @@ public static class FoxWaypointExtensions
             .Select(wp => new
             {
                 name = wp.Name,
-                position = wp.Position.PositionToVector3()
+                position = wp.Position.PositionToVector3(),
+                type = wp.Type
             })
             .Select(wp => new
             {
@@ -29,7 +34,7 @@ public static class FoxWaypointExtensions
                     y = wp.position.Y,
                     z = wp.position.Z,
                 },
-                colour = colorHex,
+                colour = wp.type == "A" ? colorAHex : colorBHex,
                 wp.name
             })
             .ToArray();

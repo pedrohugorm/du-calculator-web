@@ -14,9 +14,10 @@
     private string _endPosition = "::pos{0,0,1058320,1238750,-89237}";
     private int _numRings = 3;
     private float _hexSize = 3.464f;
-    private string _wpColor = "FF10F0";
+    private string _wpAColor = "FF10F0";
+    private string _wpBColor = "10FFF0";
     private string _output = "";
-    private readonly bool _showExportList = true;
+    private readonly bool _showExportList = false;
     private bool _reverseOrder = true;
 
     private IEnumerable<IHexGridGenerator.WaypointLine> _waypointLines = new List<IHexGridGenerator.WaypointLine>();
@@ -88,7 +89,7 @@
         </div>
         <div class="row">
             <div class="col">
-                @Vector3.Cross(new Vector3(0,0,1), new Vector3(0.5f,0.5f,1))
+                @Vector3.Cross(new Vector3(0, 0, 1), new Vector3(0.5f, 0.5f, 1))
                 <pre>@_output</pre>
             </div>
         </div>
@@ -97,7 +98,7 @@
             <div class="row">
                 <pre class="lua">
 local sagaDbValue = '@_waypointLines.ToSagaDataBankString()'
-local foxDbValue = '@_waypointLines.ToFoxDataBankString(_wpColor)'
+local foxDbValue = '@_waypointLines.ToFoxDataBankString(_wpAColor, _wpBColor)'
 
 db.setStringValue('SagaRoutes', sagaDbValue);
 db.setStringValue('savemarks', foxDbValue);
@@ -148,10 +149,22 @@ db.setStringValue('savemarks', foxDbValue);
                             <input type="text" @bind="_hexSize" class="form-control"/>
                         </div>
                     </div>
+
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button type="submit" @onclick="Calculate" class="btn btn-primary">Calculate</button>
+                    </div>
                     <div class="col-2">
                         <div class="form-group col space-bottom">
-                            <label class="dark-bg">Waypoint Color:</label>
-                            <input type="text" @bind="_wpColor" class="form-control" style="border-color: #@_wpColor; border-width: 2px"/>
+                            <label class="dark-bg">Waypoint A Color:</label>
+                            <input type="text" @bind="_wpAColor" class="form-control" style="border-color: #@_wpAColor; border-width: 2px"/>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group col space-bottom">
+                            <label class="dark-bg">Waypoint B Color:</label>
+                            <input type="text" @bind="_wpBColor" class="form-control" style="border-color: #@_wpBColor; border-width: 2px"/>
                         </div>
                     </div>
                     <div class="col-2">
@@ -159,11 +172,6 @@ db.setStringValue('savemarks', foxDbValue);
                             <label class="dark-bg">Reverse Order:</label>
                             <input type="checkbox" @bind="_reverseOrder" class="form-check"/>
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <button type="submit" @onclick="Calculate" class="btn btn-primary">Calculate</button>
                     </div>
                 </div>
             </div>

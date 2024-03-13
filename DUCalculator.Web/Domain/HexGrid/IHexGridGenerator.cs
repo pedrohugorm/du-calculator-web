@@ -25,7 +25,8 @@ public interface IHexGridGenerator
 
     public record Waypoint(
         string Name,
-        string Position
+        string Position,
+        string Type
     )
     {
         public string ToSagaWaypointString()
