@@ -21,7 +21,20 @@ public interface IHexGridGenerator
         double TotalDistance,
         double Scanning,
         double Reposition
-    );
+    )
+    {
+        public static Result Null()
+        {
+            return new Result(
+                new List<WaypointLine>(),
+                default,
+                default,
+                default,
+                default,
+                default
+            );
+        }
+    }
 
     public record Waypoint(
         string Name,
