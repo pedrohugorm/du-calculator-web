@@ -1,0 +1,143 @@
+﻿@page "/lua-log-analyser"
+@using DUCalculator.Web.Domain.LogAnalyser
+@inject ILuaLogAnalyserService LuaLogAnalyserService
+@inject IJSRuntime JS
+
+<PageTitle>Lua Log Analyser</PageTitle>
+
+@code {
+    readonly Dictionary<string, ILuaLogEntry> _allEntries = new();
+    string _text = "";
+    
+    LogAnalysisResult? _analysisResult;
+    readonly Dictionary<long, string> _timestampResults = new();
+    Dictionary<string, bool> _sizeFilters = new()
+    {
+        {"XS", true},
+        {"S", true},
+        {"M", true},
+        {"L", true},
+    };
+
+    private async Task AnalyseLuaLog()
+    {
+        _analysisResult = LuaLogAnalyserService.Analyse(_text);
+        
+        foreach (var entry in _analysisResult.Entries)
+        {
+            _allEntries.TryAdd(entry.ToUniqueName(), entry);
+            
+            if (_timestampResults.ContainsKey(entry.Timestamp))
+            {
+                continue;
+            }
+            
+            var result = await JS.InvokeAsync<string>("timestampToLocalDate", entry.Timestamp);
+
+            _timestampResults.TryAdd(entry.Timestamp, result);
+        }
+    }
+
+    private void Clear()
+    {
+        _allEntries.Clear();
+    }
+
+    private void ToggleFilter(string size)
+    {
+        if (!_sizeFilters.ContainsKey(size))
+        {
+            return;
+        }
+        
+        _sizeFilters[size] = !_sizeFilters[size];
+    }
+    
+    private void ResetSizeFilter()
+    {
+        foreach (var kvp in _sizeFilters)
+        {
+            _sizeFilters[kvp.Key] = true;
+        }
+    }
+
+    private bool ApplyFilters(KeyValuePair<string, ILuaLogEntry> arg)
+    {
+        if (arg.Value is RadarContactLogEntry radarContact)
+        {
+            if (_sizeFilters.TryGetValue(radarContact.Construct.Size, out var active))
+            {
+                return active;
+            }
+        }
+
+        return true;
+    }
+
+    private int CountBySize(string size)
+    {
+        return _allEntries.Count(x =>
+        {
+            if (x.Value is RadarContactLogEntry radarContact)
+            {
+                return radarContact.Construct.Size == size;
+            }
+
+            return false;
+        });
+    }
+}
+
+<div class="console-container">
+    <div class="console-output">
+        <div class="row">
+            <div class="col">
+                @if (_analysisResult != null)
+                {
+                    <div>@_analysisResult.Message</div>
+                    foreach (var kvp in _allEntries
+                        .OrderByDescending(x => x.Key)
+                        .Where(ApplyFilters)
+                    )
+                    {
+                        if (kvp.Value is RadarContactLogEntry radarContact)
+                        {
+                            <div class="entry">
+                                <span class="date">@(_timestampResults.TryGetValue(radarContact.Timestamp, out var dateString) ? dateString : string.Empty)</span>
+                                <span class="badge construct-@radarContact.Construct.Size.ToLower()">@radarContact.Construct.Size</span>
+                                <span>@radarContact.Construct.Name&nbsp;</span>
+                                <span class="position">@radarContact.Position</span>
+                                <span class="tags">
+                                    @foreach (var tag in radarContact.Construct.Tags)
+                                    {
+                                        <span class="badge">@tag</span>
+                                    }
+                                </span>
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="console-input">
+        <form @onsubmit="AnalyseLuaLog">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <textarea placeholder="Paste DU Lua Channel Log" @bind="_text" class="form-control"></textarea>
+                    </div>
+                    <div class="col-md-8">
+                        <button type="submit" class="btn btn-primary">Analyse</button>
+                        <button @onclick="Clear" type="button" class="btn btn-secondary">Clear</button>
+                        <button @onclick="ResetSizeFilter" type="button" class="btn btn-dark" title="Clear Size Filter">ALL</button>
+                        <button @onclick='() => ToggleFilter("XS")' type="button" class="btn btn-dark btn-active-@_sizeFilters["XS"]" title="Filter only XS Cores">XS (@CountBySize("XS"))</button>
+                        <button @onclick='() => ToggleFilter("S")' type="button" class="btn btn-dark btn-active-@_sizeFilters["S"]" title="Filter only S Cores">S (@CountBySize("S"))</button>
+                        <button @onclick='() => ToggleFilter("M")' type="button" class="btn btn-dark btn-active-@_sizeFilters["M"]" title="Filter only M Cores">M (@CountBySize("M"))</button>
+                        <button @onclick='() => ToggleFilter("L")' type="button" class="btn btn-dark btn-active-@_sizeFilters["L"]" title="Filter only L Cores">L (@CountBySize("L"))</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

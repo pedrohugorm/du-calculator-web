@@ -40,6 +40,10 @@
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text);
         }
+        
+        function timestampToLocalDate(timestamp) {
+            return new Date(timestamp).toLocaleString();
+        }
     </script>
 </body>
 
