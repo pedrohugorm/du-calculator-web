@@ -78,11 +78,24 @@
     cursor: pointer;
 }
 
-.waypoint-line .copied-check[b-69b3xevm99] {
+.copied-check[b-69b3xevm99] {
     background-color: lawngreen;
     color: black;
     border-radius: 2px;
     padding: 4px;
+}
+
+.copy-script[b-69b3xevm99] {
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    background-color: rgba(0,0,0, 0.4);
+    padding: 4px;
+    border-radius: 2px;
+}
+
+.copy-script:hover[b-69b3xevm99] {
+    text-decoration: underline;
 }
 
 .lua[b-69b3xevm99]
