@@ -18,7 +18,7 @@
     private string _wpBColor = "10FFF0";
     private string _output = "";
     private readonly bool _showExportList = false;
-    private bool _reverseOrder = true;
+    private bool _reverseOrder = false;
 
     private IEnumerable<IHexGridGenerator.WaypointLine> _waypointLines = new List<IHexGridGenerator.WaypointLine>();
     private Dictionary<string, bool> _copiedWaypoints = new();
@@ -41,11 +41,11 @@
 
         sb.AppendLine();
 
-        sb.AppendLine($"Number of Lines = {result.NumberOfLines}");
-        sb.AppendLine($"Single Line Distance = {result.SingleLineDistance:N2}");
-        sb.AppendLine($"Total Distance = {result.TotalDistance:N2}");
-        sb.AppendLine($"Scanning = {result.Scanning:N2}");
-        sb.AppendLine($"Reposition = {result.Reposition:N2}");
+        // sb.AppendLine($"Number of Lines = {result.NumberOfLines}");
+        // sb.AppendLine($"Single Line Distance = {result.SingleLineDistance:N2}");
+        // sb.AppendLine($"Total Distance = {result.TotalDistance:N2}");
+        // sb.AppendLine($"Scanning = {result.Scanning:N2}");
+        // sb.AppendLine($"Reposition = {result.Reposition:N2}");
 
         _output = sb.ToString();
     }
@@ -61,10 +61,53 @@
         }
     }
 
+    private void CopySaga()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($"local sagaDbValue = '{_waypointLines.ToSagaDataBankString()}'");
+        sb.AppendLine("db.setStringValue('SagaRoutes', sagaDbValue)");
+        
+        JS.InvokeVoidAsync("copyToClipboard", sb.ToString());
+        
+        _copiedWaypoints.TryAdd("saga", true);
+    }
+    
+    private void CopyFox()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($"local foxDbValue = '{_waypointLines.ToFoxDataBankString(_wpAColor, _wpBColor)}'");
+        sb.AppendLine("db.setStringValue('savemarks', foxDbValue)");
+        
+        JS.InvokeVoidAsync("copyToClipboard", sb.ToString());
+        
+        _copiedWaypoints.TryAdd("fox", true);
+    }
+
 }
 
 <div class="console-container">
     <div class="console-output">
+        @if (_waypointLines.Any())
+        {
+            <div class="row">
+                <a @onclick="() => CopySaga()" class="copy-script" title="click to copy the script for Saga">
+                    <pre class="lua">local sagaDbValue = '@_waypointLines.ToSagaDataBankString()'
+db.setStringValue('SagaRoutes', sagaDbValue);</pre>
+                </a>
+                @if (_copiedWaypoints.ContainsKey("saga"))
+                {
+                    <span class="copied-check">&#10003; Copied script</span>
+                }
+                <a @onclick="() => CopyFox()" class="copy-script" title="click to copy the script for Fox HUD">
+                    <pre class="lua">local foxDbValue = '@_waypointLines.ToFoxDataBankString(_wpAColor, _wpBColor)'
+db.setStringValue('savemarks', foxDbValue);</pre>
+                </a>
+                @if (_copiedWaypoints.ContainsKey("fox"))
+                {
+                    <span class="copied-check">&#10003; Copied script</span>
+                }
+            </div>
+        }
         <div class="row">
             <div class="col">
                 @foreach (var wpl in _waypointLines)
@@ -92,18 +135,6 @@
                 <pre>@_output</pre>
             </div>
         </div>
-        @if (_waypointLines.Any())
-        {
-            <div class="row">
-                <pre class="lua">
-local sagaDbValue = '@_waypointLines.ToSagaDataBankString()'
-local foxDbValue = '@_waypointLines.ToFoxDataBankString(_wpAColor, _wpBColor)'
-
-db.setStringValue('SagaRoutes', sagaDbValue);
-db.setStringValue('savemarks', foxDbValue);
-            </pre>
-            </div>
-        }
         @if (_showExportList)
         {
             <div class="row">
@@ -168,7 +199,7 @@ db.setStringValue('savemarks', foxDbValue);
                     </div>
                     <div class="col-2">
                         <div class="form-group col space-bottom">
-                            <label class="dark-bg">Reverse Order:</label>
+                            <label class="dark-bg">Ascending Order:</label>
                             <input type="checkbox" @bind="_reverseOrder" class="form-check"/>
                         </div>
                     </div>
