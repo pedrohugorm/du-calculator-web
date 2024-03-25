@@ -202,6 +202,47 @@
 {
     
 }
+/* /Pages/TravelRouter.razor.rz.scp.css */
+.console-container[b-191nzb9fgh] {
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 1em;
+    color: rgba(255, 255, 255);
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.console-output[b-191nzb9fgh] {
+    flex: 1;
+
+    padding-bottom: 1em;
+}
+
+.console-input[b-191nzb9fgh] {
+    position: sticky;
+    bottom: 0;
+}
+
+.waypoint-position[b-191nzb9fgh] {
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    background-color: rgba(0,0,0, 0.4);
+    padding: 4px;
+    border-radius: 2px;
+}
+
+.waypoint-position:hover[b-191nzb9fgh] {
+    text-decoration: underline;
+}
+
+.copied-check[b-191nzb9fgh] {
+    background-color: lawngreen;
+    color: black;
+    border-radius: 2px;
+    padding: 4px;
+}
 /* /Pages/WeaponDamage.razor.rz.scp.css */
 
 .console-container[b-qfxjht9esl] {
