@@ -1,0 +1,115 @@
+﻿@page "/travel-router"
+@using DUCalculator.Web.Domain.SpaceTravel
+@using DUCalculator.Web.Domain.LiveTrace
+@inject ITravelRouteService TravelRouteService
+@inject IJSRuntime JS
+
+@code {
+    private string _positions = string.Empty;
+    private string _beacons = string.Empty;
+    private string? _startPos;
+    private IEnumerable<ITravelRouteWaypoint> _waypoints = new List<ITravelRouteWaypoint>();
+
+    private readonly Dictionary<string, NamedPosition> _namedPositions = new();
+    private readonly Dictionary<string, NamedPosition> _beaconPositions = new();
+    private readonly Dictionary<string, bool> _copiedWaypoints = new();
+
+    private void HandleSubmit()
+    {
+        if (string.IsNullOrEmpty(_startPos))
+        {
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(_positions))
+        {
+            var positions = PositionListParser.ParseText(_positions)
+                .ToDictionary(k => k.Name, v => v);
+
+            foreach (var kvp in positions)
+            {
+                _namedPositions.TryAdd(kvp.Key, kvp.Value);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(_beacons))
+        {
+            var positions = PositionListParser.ParseText(_beacons)
+                .ToDictionary(k => k.Name, v => v);
+
+            foreach (var kvp in positions)
+            {
+                _beaconPositions.TryAdd(kvp.Key, kvp.Value);
+            }
+        }
+
+        _waypoints = TravelRouteService.SolveTravelPath(
+            new NamedPosition("Start", _startPos.PositionToVector3()),
+            _namedPositions.Values,
+            _beaconPositions.Values
+            );
+    }
+
+    private void Clear()
+    {
+        _namedPositions.Clear();
+    }
+    
+    private void Copy(MouseEventArgs _, ITravelRouteWaypoint waypoint)
+    {
+        JS.InvokeVoidAsync("copyToClipboard", $"mark {waypoint.Position.Vector3ToPosition()} {waypoint.Name} 1");
+
+        if (!_copiedWaypoints.TryAdd(waypoint.Name, true))
+        {
+            _copiedWaypoints.Remove(waypoint.Name);
+        }
+    }
+
+    private void Remove(ITravelRouteWaypoint wp)
+    {
+        _namedPositions.Remove(wp.Name);
+    }
+}
+
+<PageTitle>Travel Router</PageTitle>
+
+<div class="console-container">
+    <div class="console-output">
+        <div class="row">
+            <div class="col">
+                @foreach (var wp in _waypoints)
+                {
+                    <div>
+                        <a @onclick="args => Copy(args, wp)" href="javascript:void(0)" title="click to copy @wp.Name" class="waypoint-position">@wp.Name @wp.Position.Vector3ToPosition()</a>
+                        @if (_copiedWaypoints.ContainsKey(wp.Name))
+                        {
+                            <span class="copied-check">&#10003;</span>
+                        }
+                        @* <button @onclick="() => Remove(wp)" type="button" class="btn-sm btn-danger">X</button> *@
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="console-input">
+        <form @onsubmit="HandleSubmit">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="text" placeholder="Start Position" @bind="_startPos" class="form-control"/>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea placeholder="Positions, Format: NAME POSITION separated by lines" @bind="_positions" class="form-control"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea placeholder="Beacons, Format: NAME POSITION separated by lines" @bind="_beacons" class="form-control"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary">Solve Path</button>
+                        <button @onclick="Clear" type="button" class="btn btn-secondary">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
