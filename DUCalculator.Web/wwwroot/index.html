@@ -44,39 +44,6 @@
     function timestampToLocalDate(timestamp) {
         return new Date(timestamp).toLocaleString();
     }
-
-    let dbRequest = indexedDB.open("du-calculator", 1);
-
-    dbRequest.onupgradeneeded = function (event) {
-        let db = event.target.result;
-
-        db.createObjectStore("log_store", {keyPath: "id"});
-    }
-
-    function addLogEntryAsync(data) {
-        let db = indexedDB.open("du-calculator", 1);
-
-        db.onsuccess = function (event) {
-            let db = event.target.result;
-
-            let transaction = db.transaction("log_store", "readwrite");
-            let logStore = transaction.objectStore("log_store");
-            
-            let addRequest = logStore.add(data);
-            
-            addRequest.onsuccess = function() {
-                console.info("Added!");
-            };
-            
-            addRequest.onerror = function(event) {
-                console.info("Error: " + event.target.error);
-            };
-
-            transaction.oncomplete = function() {
-                db.close();
-            };
-        }
-    }
 </script>
 </body>
 

@@ -19,11 +19,6 @@
         {"L", true},
     };
 
-    private async Task TestDB()
-    {
-        await JS.InvokeVoidAsync("addLogEntryAsync", new {id = 1, test = "a"});
-    }
-
     private async Task AnalyseLuaLog()
     {
         _analysisResult = ChannelOutputAnalyserService.Analyse(_text);
@@ -43,9 +38,8 @@
         }
     }
 
-    private async Task Clear()
+    private void Clear()
     {
-        await TestDB();
         _allEntries.Clear();
     }
 
