@@ -176,6 +176,16 @@
     color: white;
 }
 
+.badge.badge-miss[b-68xsd5yhf6] {
+    background-color: yellow;
+    color: black;
+}
+
+.badge.badge-hit[b-68xsd5yhf6] {
+    background-color: red;
+    color: white;
+}
+
 .position[b-68xsd5yhf6] {
     cursor: pointer;
     text-decoration: none;

@@ -2,49 +2,82 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>DUCalculator.Web</title>
-    <base href="/du-calculator-web/" />
-    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-    <link href="css/app.css" rel="stylesheet" />
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link href="DUCalculator.Web.styles.css" rel="stylesheet" />
+    <base href="/"/>
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet"/>
+    <link href="css/app.css" rel="stylesheet"/>
+    <link rel="icon" type="image/png" href="favicon.png"/>
+    <link href="DUCalculator.Web.styles.css" rel="stylesheet"/>
 </head>
 
 <body>
-    <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
-    </div>
+<div id="app">
+    <svg class="loading-progress">
+        <circle r="40%" cx="50%" cy="50%"/>
+        <circle r="40%" cx="50%" cy="50%"/>
+    </svg>
+    <div class="loading-progress-text"></div>
+</div>
 
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
-    </div>
-    <script src="_framework/blazor.webassembly.js"></script>
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+<script src="_framework/blazor.webassembly.js"></script>
 
-    <script>
-        function scrollToBottom() {
-            document.documentElement.scrollTop = document.documentElement.scrollHeight;
-        }
+<script>
+    function scrollToBottom() {
+        document.documentElement.scrollTop = document.documentElement.scrollHeight;
+    }
 
-        function scrollToTop() {
-            document.documentElement.scrollTop = 0;
+    function scrollToTop() {
+        document.documentElement.scrollTop = 0;
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text);
+    }
+
+    function timestampToLocalDate(timestamp) {
+        return new Date(timestamp).toLocaleString();
+    }
+
+    let dbRequest = indexedDB.open("du-calculator", 1);
+
+    dbRequest.onupgradeneeded = function (event) {
+        let db = event.target.result;
+
+        db.createObjectStore("log_store", {keyPath: "id"});
+    }
+
+    function addLogEntryAsync(data) {
+        let db = indexedDB.open("du-calculator", 1);
+
+        db.onsuccess = function (event) {
+            let db = event.target.result;
+
+            let transaction = db.transaction("log_store", "readwrite");
+            let logStore = transaction.objectStore("log_store");
+            
+            let addRequest = logStore.add(data);
+            
+            addRequest.onsuccess = function() {
+                console.info("Added!");
+            };
+            
+            addRequest.onerror = function(event) {
+                console.info("Error: " + event.target.error);
+            };
+
+            transaction.oncomplete = function() {
+                db.close();
+            };
         }
-        
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text);
-        }
-        
-        function timestampToLocalDate(timestamp) {
-            return new Date(timestamp).toLocaleString();
-        }
-    </script>
+    }
+</script>
 </body>
 
 </html>
