@@ -1,6 +1,6 @@
 ﻿namespace DUCalculator.Web.Domain.LogAnalyser;
 
-public interface ILuaLogAnalyserService
+public interface IChannelOutputAnalyserService
 {
     LogAnalysisResult Analyse(string log);
 }

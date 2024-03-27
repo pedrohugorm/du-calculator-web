@@ -1,6 +1,6 @@
 ﻿@page "/lua-log-analyser"
 @using DUCalculator.Web.Domain.LogAnalyser
-@inject ILuaLogAnalyserService LuaLogAnalyserService
+@inject IChannelOutputAnalyserService ChannelOutputAnalyserService
 @inject IJSRuntime JS
 
 <PageTitle>Lua Log Analyser</PageTitle>
@@ -11,7 +11,7 @@
     
     LogAnalysisResult? _analysisResult;
     readonly Dictionary<long, string> _timestampResults = new();
-    Dictionary<string, bool> _sizeFilters = new()
+    Dictionary<string, bool> _filters = new()
     {
         {"XS", true},
         {"S", true},
@@ -19,9 +19,14 @@
         {"L", true},
     };
 
+    private async Task TestDB()
+    {
+        await JS.InvokeVoidAsync("addLogEntryAsync", new {id = 1, test = "a"});
+    }
+
     private async Task AnalyseLuaLog()
     {
-        _analysisResult = LuaLogAnalyserService.Analyse(_text);
+        _analysisResult = ChannelOutputAnalyserService.Analyse(_text);
         
         foreach (var entry in _analysisResult.Entries)
         {
@@ -38,26 +43,27 @@
         }
     }
 
-    private void Clear()
+    private async Task Clear()
     {
+        await TestDB();
         _allEntries.Clear();
     }
 
     private void ToggleFilter(string size)
     {
-        if (!_sizeFilters.ContainsKey(size))
+        if (!_filters.ContainsKey(size))
         {
             return;
         }
         
-        _sizeFilters[size] = !_sizeFilters[size];
+        _filters[size] = !_filters[size];
     }
     
     private void ResetSizeFilter()
     {
-        foreach (var kvp in _sizeFilters)
+        foreach (var kvp in _filters)
         {
-            _sizeFilters[kvp.Key] = true;
+            _filters[kvp.Key] = true;
         }
     }
 
@@ -65,7 +71,7 @@
     {
         if (arg.Value is RadarContactLogEntry radarContact)
         {
-            if (_sizeFilters.TryGetValue(radarContact.Construct.Size, out var active))
+            if (_filters.TryGetValue(radarContact.Construct.Size, out var active))
             {
                 return active;
             }
@@ -86,6 +92,11 @@
             return false;
         });
     }
+
+    private int CountHits() => _allEntries.Count(x => x.Value is HitEntry);
+    private int CountMisses() => _allEntries.Count(x => x.Value is MissEntry);
+    private int CountCombatEntries() => _allEntries.Count(x => x.Value is CombatLogEntry);
+    private bool HasCombatEntries() => _allEntries.Any(x => x.Value is CombatLogEntry);
 }
 
 <div class="console-container">
@@ -115,6 +126,29 @@
                                 </span>
                             </div>
                         }
+                        if (kvp.Value is HitEntry hit)
+                        {
+                            <div class="entry">
+                                <span class="date">@(_timestampResults.TryGetValue(hit.Timestamp, out var dateString) ? dateString : string.Empty)</span>
+                                <span>@hit.OriginName - @hit.WeaponName did <spawn class="badge badge-hit">@hit.Damage</spawn> damage to @hit.TargetName</span>
+                            </div>
+                        }
+                        if (kvp.Value is MissEntry miss)
+                        {
+                            <div class="entry">
+                                <span class="date">@(_timestampResults.TryGetValue(miss.Timestamp, out var dateString) ? dateString : string.Empty)</span>
+                                <span>@miss.OriginName - @miss.WeaponName <span class="badge badge-miss">missed</span> @miss.TargetName</span>
+                            </div>
+                        }
+                    }
+                    
+                    @if (HasCombatEntries())
+                    {
+                        <div>
+                            <div>Hits: @CountHits()</div>
+                            <div>Misses: @CountMisses()</div>
+                            <div>Hit Ratio: @($"{(CountHits() / (float)CountCombatEntries()) * 100:F2}%")</div>
+                        </div>
                     }
                 }
             </div>
@@ -131,10 +165,10 @@
                         <button type="submit" class="btn btn-primary">Analyse</button>
                         <button @onclick="Clear" type="button" class="btn btn-secondary">Clear</button>
                         <button @onclick="ResetSizeFilter" type="button" class="btn btn-dark" title="Clear Size Filter">ALL</button>
-                        <button @onclick='() => ToggleFilter("XS")' type="button" class="btn btn-dark btn-active-@_sizeFilters["XS"]" title="Filter only XS Cores">XS (@CountBySize("XS"))</button>
-                        <button @onclick='() => ToggleFilter("S")' type="button" class="btn btn-dark btn-active-@_sizeFilters["S"]" title="Filter only S Cores">S (@CountBySize("S"))</button>
-                        <button @onclick='() => ToggleFilter("M")' type="button" class="btn btn-dark btn-active-@_sizeFilters["M"]" title="Filter only M Cores">M (@CountBySize("M"))</button>
-                        <button @onclick='() => ToggleFilter("L")' type="button" class="btn btn-dark btn-active-@_sizeFilters["L"]" title="Filter only L Cores">L (@CountBySize("L"))</button>
+                        <button @onclick='() => ToggleFilter("XS")' type="button" class="btn btn-dark btn-active-@_filters["XS"]" title="Filter only XS Cores">XS (@CountBySize("XS"))</button>
+                        <button @onclick='() => ToggleFilter("S")' type="button" class="btn btn-dark btn-active-@_filters["S"]" title="Filter only S Cores">S (@CountBySize("S"))</button>
+                        <button @onclick='() => ToggleFilter("M")' type="button" class="btn btn-dark btn-active-@_filters["M"]" title="Filter only M Cores">M (@CountBySize("M"))</button>
+                        <button @onclick='() => ToggleFilter("L")' type="button" class="btn btn-dark btn-active-@_filters["L"]" title="Filter only L Cores">L (@CountBySize("L"))</button>
                     </div>
                 </div>
             </div>

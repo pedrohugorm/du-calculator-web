@@ -44,6 +44,16 @@
     color: white;
 }
 
+.badge.badge-miss {
+    background-color: yellow;
+    color: black;
+}
+
+.badge.badge-hit {
+    background-color: red;
+    color: white;
+}
+
 .position {
     cursor: pointer;
     text-decoration: none;
