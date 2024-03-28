@@ -1,5 +1,6 @@
 ﻿@page "/lua-log-analyser"
 @using DUCalculator.Web.Domain.LogAnalyser
+@using System.Text.RegularExpressions
 @inject IChannelOutputAnalyserService ChannelOutputAnalyserService
 @inject IJSRuntime JS
 
@@ -87,10 +88,63 @@
         });
     }
 
+    private string IdFromString(string value) => Regex.Replace(value, "[^\\w]", "");
+
     private int CountHits() => _allEntries.Count(x => x.Value is HitEntry);
     private int CountMisses() => _allEntries.Count(x => x.Value is MissEntry);
     private int CountCombatEntries() => _allEntries.Count(x => x.Value is CombatLogEntry);
     private bool HasCombatEntries() => _allEntries.Any(x => x.Value is CombatLogEntry);
+
+    private Dictionary<string, double> DamageByTarget() => _allEntries.Values.Where(x => x is HitEntry)
+        .Cast<HitEntry>()
+        .GroupBy(k => k.TargetName)
+        .ToDictionary(k => k.Key, v => v.Sum(x => x.Damage));
+
+    private Dictionary<string, Dictionary<long, double>> DpsPerTarget()
+    {
+        return _allEntries.Values.Where(x => x is CombatLogEntry)
+            .Cast<CombatLogEntry>()
+            .GroupBy(x => x.TargetName.Trim())
+            .ToDictionary(
+                k => k.Key, 
+                v => v
+                    .GroupBy(g => DateTimeOffset.FromUnixTimeMilliseconds(g.Timestamp).ToUnixTimeSeconds())
+                    .ToDictionary(ke => ke.Key, ve => ve.Sum(x => x.Damage))
+            );
+    }
+
+    private void RenderChart(Dictionary<string, Dictionary<long, double>> data)
+    {
+        var maxLabels = data.Max(x => x.Value.Keys.Count);
+        
+        JS.InvokeVoidAsync(
+            "renderLineChart", 
+            "chart-dps",
+            new
+            {
+                labels = CreateChartLabels(maxLabels),
+                datasets = data.Select(x => new
+                {
+                    label = x.Key,
+                    data = x.Value.Values,
+                    borderWidth = 1
+                })
+            }
+        );
+    }
+
+    private IEnumerable<int> CreateChartLabels(int n)
+    {
+        var numbers = new int[n];
+
+        for (var i = 0; i < n; i++)
+        {
+            numbers[i] = i + 1;
+        }
+
+        return numbers;
+    }
+
 }
 
 <div class="console-container">
@@ -100,6 +154,26 @@
                 @if (_analysisResult != null)
                 {
                     <div>@_analysisResult.Message</div>
+                    @if (HasCombatEntries())
+                    {
+                        <div>
+                            <div>Hits: @CountHits()</div>
+                            <div>Misses: @CountMisses()</div>
+                            <div>Hit Ratio: @($"{CountHits() / (float)CountCombatEntries() * 100:F2}%")</div>
+                            <div>Damage by Target: </div>
+                            @foreach (var kvp in DamageByTarget())
+                            {
+                                <div>@kvp.Key = @kvp.Value damage</div>
+                            }
+                            <div>DPS per Target:</div>
+                            <canvas id="chart-dps"></canvas>
+                            @{
+                                RenderChart(DpsPerTarget());
+                            }
+                        </div>
+                        <hr />
+                    }
+                    
                     foreach (var kvp in _allEntries
                         .OrderByDescending(x => x.Key)
                         .Where(ApplyFilters)
@@ -134,15 +208,6 @@
                                 <span>@miss.OriginName - @miss.WeaponName <span class="badge badge-miss">missed</span> @miss.TargetName</span>
                             </div>
                         }
-                    }
-                    
-                    @if (HasCombatEntries())
-                    {
-                        <div>
-                            <div>Hits: @CountHits()</div>
-                            <div>Misses: @CountMisses()</div>
-                            <div>Hit Ratio: @($"{(CountHits() / (float)CountCombatEntries()) * 100:F2}%")</div>
-                        </div>
                     }
                 }
             </div>
