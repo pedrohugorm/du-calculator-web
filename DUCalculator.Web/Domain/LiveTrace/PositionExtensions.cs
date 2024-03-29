@@ -38,11 +38,11 @@ public static class PositionExtensions
         sb.Append("::pos{0,");
         sb.Append(planetId);
         sb.Append(',');
-        sb.Append(vector3.X);
+        sb.Append(vector3.X.ToString("F0"));
         sb.Append(',');
-        sb.Append(vector3.Y);
+        sb.Append(vector3.Y.ToString("F0"));
         sb.Append(',');
-        sb.Append(vector3.Z);
+        sb.Append(vector3.Z.ToString("F0"));
         sb.Append('}');
         
         return sb.ToString();

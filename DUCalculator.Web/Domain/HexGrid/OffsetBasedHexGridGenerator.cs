@@ -1,4 +1,5 @@
 using System.Numerics;
+using DUCalculator.Web.Domain.Common;
 using DUCalculator.Web.Domain.LiveTrace;
 
 namespace DUCalculator.Web.Domain.HexGrid;
@@ -7,11 +8,13 @@ public class OffsetBasedHexGridGenerator : IHexGridGenerator
 {
     public IHexGridGenerator.Result GenerateGrid(IHexGridGenerator.Settings settings)
     {
+        const int suInKm = 200000;
+        
         var baseHexRings = HexRingGenerator.GenerateRings(
             new HexRingGenerator.HexRingOptions(
                 RingCount: settings.NumRings
             )
-        );
+        ).Select(p => p * suInKm);
 
         var start = settings.EndPosition.PositionToVector3();
         var end = settings.StartPosition.PositionToVector3();
@@ -21,6 +24,7 @@ public class OffsetBasedHexGridGenerator : IHexGridGenerator
 
         var rotatedStartRings = baseHexRings
             .Select(v => RotateVectorToMatchNormal(v, direction))
+            .Select(v => v + start)
             .ToArray();
 
         var rotatedEndRings = rotatedStartRings
@@ -52,14 +56,18 @@ public class OffsetBasedHexGridGenerator : IHexGridGenerator
         );
     }
 
-    private static Vector3 RotateVectorToMatchNormal(Vector3 initialVector, Vector3 targetNormal)
+    private static Vector3 RotateVectorToMatchNormal(Vector3 vector, Vector3 normal)
     {
-        // Find the rotation quaternion that transforms the initial vector to align with the target normal
-        var rotationQuaternion = Quaternion.CreateFromAxisAngle(Vector3.Cross(initialVector, targetNormal), (float)Math.Acos(Vector3.Dot(initialVector, targetNormal)));
+        var forward = new Vector3(1, 0, 0);
+        
+        var rotationAxis = Vector3.Cross(forward, normal)
+            .NormalizeSafe();
+        var rotationAngle = (float)Math.Acos(
+            Math.Clamp(Vector3.Dot(forward, normal), -1, 1)
+        );
 
-        // Apply the rotation quaternion to the initial vector
-        var rotatedVector = Vector3.Transform(initialVector, rotationQuaternion);
+        var rotQ = Quaternion.CreateFromAxisAngle(rotationAxis, rotationAngle);
 
-        return rotatedVector;
+        return Vector3.Transform(vector, rotQ);
     }
 }
