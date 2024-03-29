@@ -1,6 +1,4 @@
-﻿using DUCalculator.Web.Domain.LiveTrace;
-
-namespace DUCalculator.Web.Domain.HexGrid;
+﻿namespace DUCalculator.Web.Domain.HexGrid;
 
 public interface IHexGridGenerator
 {
@@ -10,8 +8,7 @@ public interface IHexGridGenerator
         string StartPosition,
         string EndPosition,
         bool ReverseOrder,
-        int NumRings = 3,
-        float HexSizeSu = 3.35f
+        int NumRings = 3
     );
 
     public record Result(
