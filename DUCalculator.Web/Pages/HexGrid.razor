@@ -18,7 +18,7 @@
     private string _wpBColor = "10FFF0";
     private string _output = "";
     private readonly bool _showExportList = true;
-    private bool _reverseOrder = false;
+    private bool _reverseOrder = true;
 
     private IEnumerable<IHexGridGenerator.WaypointLine> _waypointLines = new List<IHexGridGenerator.WaypointLine>();
     private Dictionary<string, bool> _copiedWaypoints = new();
@@ -198,7 +198,7 @@ db.setStringValue('savemarks', foxDbValue);</pre>
                     </div>
                     <div class="col-2">
                         <div class="form-group col space-bottom">
-                            <label class="dark-bg">Ascending Order:</label>
+                            <label class="dark-bg">Reverse Order:</label>
                             <input type="checkbox" @bind="_reverseOrder" class="form-check"/>
                         </div>
                     </div>
