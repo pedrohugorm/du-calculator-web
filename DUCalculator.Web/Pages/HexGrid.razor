@@ -1,7 +1,6 @@
 ﻿@page "/hex"
 @using DUCalculator.Web.Domain.HexGrid
 @using System.Text
-@using System.Numerics
 
 @inject IJSRuntime JS
 
@@ -10,8 +9,8 @@
 @inject IHexGridGenerator HexGridGenerator;
 
 @code {
-    private string _startPosition = "::pos{0,0,-64334000.0000,55522000.0000,-14400000.0000}";
-    private string _endPosition = "::pos{0,0,-71807619.6128,61950788.0246,-16078022.3929}";
+    private string _startPosition = "::pos{0,0,-66576084,57450636,-14903407}";
+    private string _endPosition = "::pos{0,0,-74797056,64522304,-16749232}";
     private int _numRings = 3;
     private float _hexSize = 3.464f;
     private string _wpAColor = "FF10F0";
