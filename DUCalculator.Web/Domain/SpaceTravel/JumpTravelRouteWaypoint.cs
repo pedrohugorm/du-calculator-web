@@ -13,4 +13,8 @@ public class JumpTravelRouteWaypoint : ITravelRouteWaypoint
     public string Type => "jump";
     public string Name { get; }
     public Vector3 Position { get; }
+
+    public void AddOffset(Vector3 offset)
+    {
+    }
 }

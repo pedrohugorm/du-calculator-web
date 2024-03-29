@@ -12,5 +12,10 @@ public class BurnTravelRouteWaypoint : ITravelRouteWaypoint
 
     public string Type => "burn";
     public string Name { get; }
-    public Vector3 Position { get; }
+    public Vector3 Position { get; private set; }
+    
+    public void AddOffset(Vector3 offset)
+    {
+        Position += offset;
+    }
 }

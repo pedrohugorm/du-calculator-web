@@ -40,25 +40,7 @@ public interface IHexGridGenerator
         string Name,
         string Position,
         string Type
-    )
-    {
-        public string ToSagaWaypointString()
-        {
-            var p = Position.PositionToVector3();
-            
-            return string.Join(
-                "",
-                "{n=\"",
-                Name,
-                "\",",
-                "c={",
-                $"x={p.X:F2},",
-                $"y={p.Y:F2},",
-                $"z={p.Z:F2}",
-                "}},"
-            );
-        }
-    };
+    );
 
     public record WaypointLine(
         Waypoint StartWaypoint,

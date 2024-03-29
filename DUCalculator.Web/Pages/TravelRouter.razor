@@ -1,6 +1,9 @@
 ﻿@page "/travel-router"
 @using DUCalculator.Web.Domain.SpaceTravel
 @using DUCalculator.Web.Domain.LiveTrace
+@using System.Numerics
+@using System.Text
+@using DUCalculator.Web.Domain.HexGrid
 @inject ITravelRouteService TravelRouteService
 @inject IJSRuntime JS
 
@@ -9,6 +12,11 @@
     private string _beacons = string.Empty;
     private string? _startPos;
     private IEnumerable<ITravelRouteWaypoint> _waypoints = new List<ITravelRouteWaypoint>();
+    
+    private int _offsetX;
+    private int _offsetY;
+    private int _offsetZ;
+    private int _offsetMultiplier = 1000;
 
     private readonly Dictionary<string, NamedPosition> _namedPositions = new();
     private readonly Dictionary<string, NamedPosition> _beaconPositions = new();
@@ -16,6 +24,8 @@
 
     private void HandleSubmit()
     {
+        var offsetVector = new Vector3(_offsetX, _offsetY, _offsetZ);
+        
         if (string.IsNullOrEmpty(_startPos))
         {
             return;
@@ -47,7 +57,17 @@
             new NamedPosition("Start", _startPos.PositionToVector3()),
             _namedPositions.Values,
             _beaconPositions.Values
-            );
+            ).ToList();
+        
+        foreach (var wp in _waypoints)
+        {
+            wp.AddOffset(offsetVector * _offsetMultiplier);
+        }
+
+        if (_reversed)
+        {
+            _waypoints = _waypoints.Reverse();
+        }
     }
 
     private void Clear()
@@ -69,12 +89,51 @@
     {
         _namedPositions.Remove(wp.Name);
     }
+
+    private void CopySaga()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($"local sagaDbValue = '{_waypoints.ToSagaDataBankString()}'");
+        sb.AppendLine("db.setStringValue('SagaRoutes', sagaDbValue)");
+        
+        JS.InvokeVoidAsync("copyToClipboard", sb.ToString());
+        
+        _copiedWaypoints.TryAdd("saga", true);
+    }
+    
+    private void CopyFox()
+    {
+        var foxString = _waypoints
+            .Select(x => new Tuple<string, Vector3>(x.Name, x.Position))
+            .ToFoxDataBankString();
+        
+        var sb = new StringBuilder();
+        sb.AppendLine($"local foxDbValue = '{foxString}'");
+        sb.AppendLine("db.setStringValue('savemarks', foxDbValue)");
+        
+        JS.InvokeVoidAsync("copyToClipboard", sb.ToString());
+        
+        _copiedWaypoints.TryAdd("fox", true);
+    }
+
+    private bool _reversed;
 }
 
 <PageTitle>Travel Router</PageTitle>
 
 <div class="console-container">
     <div class="console-output">
+        @if (_waypoints.Any())
+        {
+            <div class="row">
+                <div class="col-2">
+                    <button type="button" class="btn btn-dark" @onclick="CopyFox">Copy for Fox</button>
+                </div>
+                <div class="col-2">
+                    <button type="button" class="btn btn-dark" @onclick="CopySaga">Copy for Saga</button>
+                </div>
+            </div>
+        }
         <div class="row">
             <div class="col">
                 @foreach (var wp in _waypoints)
@@ -107,6 +166,21 @@
                     <div class="col-md-4">
                         <button type="submit" class="btn btn-primary">Solve Path</button>
                         <button @onclick="Clear" type="button" class="btn btn-secondary">Clear</button>
+                    </div>
+                    <div class="col-1">
+                        <label class="form-label">Offset (x1000)</label>
+                    </div>
+                    <div class="col-1">
+                        <input type="number" placeholder="X" @bind="_offsetX" class="form-control"/>
+                    </div>
+                    <div class="col-1">
+                        <input type="number" placeholder="Y" @bind="_offsetY" class="form-control"/>
+                    </div>
+                    <div class="col-1">
+                        <input type="number" placeholder="Z" @bind="_offsetZ" class="form-control"/>
+                    </div>
+                    <div class="col-2">
+                        <input type="checkbox" @bind="_reversed"/> Reversed
                     </div>
                 </div>
             </div>
