@@ -10,6 +10,9 @@
 @code {
     private string _positions = string.Empty;
     private string _beacons = string.Empty;
+    private string _dedupePositions = string.Empty;
+    private HashSet<Vector3> _deDupedPositionsParsed = new();
+
     private string? _startPos;
     private IEnumerable<ITravelRouteWaypoint> _waypoints = new List<ITravelRouteWaypoint>();
     
@@ -30,10 +33,18 @@
         {
             return;
         }
+        
+        if (!string.IsNullOrEmpty(_dedupePositions))
+        {
+            _deDupedPositionsParsed = PositionListParser.ParseText(_dedupePositions)
+                .Select(x => x.Position)
+                .ToHashSet();
+        }
 
         if (!string.IsNullOrEmpty(_positions))
         {
             var positions = PositionListParser.ParseText(_positions)
+                .Where(np => !_deDupedPositionsParsed.Contains(np.Position))
                 .ToDictionary(k => k.Name, v => v);
 
             foreach (var kvp in positions)
@@ -163,6 +174,11 @@
                     <div class="col-md-4">
                         <textarea placeholder="Beacons, Format: NAME POSITION separated by lines" @bind="_beacons" class="form-control"></textarea>
                     </div>
+                    <div class="col-12"><hr/></div>
+                    <div class="col-md-4">
+                        <textarea placeholder="Deduplicate From: NAME POSITION separated by lines" @bind="_dedupePositions" class="form-control"></textarea>
+                    </div>
+                    <div class="col-12"><hr/></div>
                     <div class="col-md-4">
                         <button type="submit" class="btn btn-primary">Solve Path</button>
                         <button @onclick="Clear" type="button" class="btn btn-secondary">Clear</button>
