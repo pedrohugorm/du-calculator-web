@@ -1,5 +1,7 @@
-﻿using System.Text;
+﻿using System.Numerics;
+using System.Text;
 using DUCalculator.Web.Domain.HexGrid;
+using DUCalculator.Web.Domain.LiveTrace;
 using Newtonsoft.Json.Linq;
 
 namespace DUCalculator.Web.Tests;
@@ -7,49 +9,173 @@ namespace DUCalculator.Web.Tests;
 [TestFixture]
 public class ScriptGeneratorTests
 {
-    private Dictionary<string, Tuple<string, string>> _positionsByGridName;
+    private Dictionary<string, HexGridSettings> _positionsByGridName;
+
+    public record Entry(
+        string Name,
+        string StartPos,
+        string EndPos,
+        int MinSu,
+        int MaxSu,
+        int RingCount
+    );
+
+    public record TraceResult(
+        Vector3 Start,
+        Vector3 End
+    );
+
+    public record HexGridSettings(
+        TraceResult TraceResult,
+        int RingCount
+    );
+
+    private TraceResult CalculateTrace(Entry entry)
+    {
+        const int SuInKm = 200000;
+        
+        var last = entry.EndPos.PositionToVector3();
+        var start = entry.StartPos.PositionToVector3();
+
+        var direction = Vector3.Normalize(last - start);
+
+        var minSuPos = last + direction * entry.MinSu * SuInKm;
+        var maxSuPos = last + direction * entry.MaxSu * SuInKm;
+
+        return new TraceResult(
+            minSuPos,
+            maxSuPos
+        );
+    }
 
     [SetUp]
     public void Setup()
     {
-        _positionsByGridName = new Dictionary<string, Tuple<string, string>>
+        var entries = new List<Entry>
         {
-            {
-                "Gamma1",
-                new("::pos{0,0,-68174736.6077067,55503695.3791812,-15517321.4627307}",
-                    "::pos{0,0,-87378419.6462399,55412172.2750875,-21103928.7763843}")
-            },
-            {
-                "Jago-Gamma",
-                new("::pos{0,0,-62094091.4522484,58735727.4501911,-15209175.8607358}",
-                    "::pos{0,0,-50894548.7134906,74804364.7011467,-19255055.164415}")
-            },
-            {
+            new(
                 "Alioth-Gamma",
-                new("::pos{0,0,-67323447.5374155,58093513.182356,-15071210.3798439}",
-                    "::pos{0,0,-74797066.3809542,64522296.1382458,-16749236.3294535}")
-            },
-            {
+                "::pos{0,0,-8.0000,-8.0000,-126303.0000}",
+                "::pos{0,0,-64334000.0000,55522000.0000,-14400000.0000}",
+                20,
+                70,
+                5
+            ),
+            new(
+                "Talemai-Gamma",
+                "::pos{0,0,-13234464.0000,55765536.0000,465536.0000}",
+                "::pos{0,0,-64334000.0000,55522000.0000,-14400000.0000}",
+                20,
+                120,
+                5
+            ),
+            new(
+                "Jago-Gamma",
+                "::pos{0,0,-94134464.0000,12765536.0000,-3634464.0000}",
+                "::pos{0,0,-64334000.0000,55522000.0000,-14400000.0000}",
+                20,
+                120,
+                5
+            ),
+            new(
                 "Alioth-Alpha",
-                new("::pos{0,0,35565317.7809754,74772167.2829724,30222773.8030116}",
-                    "::pos{0,0,40504237.0129503,85112207.9960382,34409733.9021968}")
-            },
-            {
-                "Zeta-Teoma",
-                new("::pos{0,0,106093893.523135,65890644.8408812,-3581732.35836106}",
-                    "::pos{0,0,117189468.768697,70827511.6055688,-4746016.05136229}")
-            },
-            {
-                "Zeta-Teoma-Ex",
-                new("::pos{0,0,117189468.768697,70827511.6055688,-4746016.05136229}",
-                    "::pos{0,0,124283361.138811,73983869.0452872,-5490394.15016636}")
-            },
-            {
-                "Kappa-Alioth",
-                new("::pos{0,0,58209317.4747415,25545572.6956672,57408367.6935394}",
-                    "::pos{0,0,60924976.2121123,26737359.0435008,60092551.540309}")
-            }
+                "::pos{0,0,-8.0000,-8.0000,-126303.0000}",
+                "::pos{0,0,33946000.0000,71381990.0000,28850000.0000}",
+                20,
+                100,
+                5
+            ),
+            new(
+                "Talemai-Alpha",
+                "::pos{0,0,-13234464.0000,55765536.0000,465536.0000}",
+                "::pos{0,0,33946000.0000,71381990.0000,28850000.0000}",
+                20,
+                120,
+                5
+            ),
+            new(
+                "Teoma-Alpha",
+                "::pos{0,0,80865536.0000,54665536.0000,-934464.0000}",
+                "::pos{0,0,33946000.0000,71381990.0000,28850000.0000}",
+                20,
+                120,
+                5
+            ),
+            new(
+                "Aegis-Alpha",
+                "::pos{0,0,13856701.7693,7386301.6554,-258251.0307}",
+                "::pos{0,0,33946000.0000,71381990.0000,28850000.0000}",
+                20,
+                120,
+                5
+            ),
+            new(
+                "Alioth-Kappa",
+                "::pos{0,0,-8.0000,-8.0000,-126303.0000}",
+                "::pos{0,0,52778000.0000,23162000.0000,52040000.0000}",
+                20,
+                120,
+                5
+            ),
+            new(
+                "SinnenM1-Kappa",
+                "::pos{0,0,52416510.6689,26795577.1597,51893332.6527}",
+                "::pos{0,0,52778000.0000,23162000.0000,52040000.0000}",
+                20,
+                70,
+                6
+            ),
+            new(
+                "Talemai-Kappa",
+                "::pos{0,0,-13234464.0000,55765536.0000,465536.0000}",
+                "::pos{0,0,52778000.0000,23162000.0000,52040000.0000}",
+                20,
+                50,
+                5
+            ),
+            new(
+                "Aegis-Kappa",
+                "::pos{0,0,13856701.7693,7386301.6554,-258251.0307}",
+                "::pos{0,0,52778000.0000,23162000.0000,52040000.0000}",
+                20,
+                120,
+                5
+            ),
+            new(
+                "Jago-Beta",
+                "::pos{0,0,-94134464.0000,12765536.0000,-3634464.0000}",
+                "::pos{0,0,-117534000.0000,8122000.0000,-4000000.0000}",
+                20,
+                120,
+                5
+            ),
+            new(
+                "Teoma-Zeta",
+                "::pos{0,0,80865536.0000,54665536.0000,-934464.0000}",
+                "::pos{0,0,102456000.0000,64272000.0000,-3200000.0000}",
+                20,
+                120,
+                5
+            ),
+            new(
+                "Thades-Zeta",
+                "::pos{0,0,29165536.0000,10865536.0000,65536.0000}",
+                "::pos{0,0,102456000.0000,64272000.0000,-3200000.0000}",
+                20,
+                120,
+                5
+            ),
         };
+
+        _positionsByGridName = entries
+            .ToDictionary(k => k.Name, v => new { Trace = CalculateTrace(v), v.RingCount })
+            .ToDictionary(
+                k => k.Key,
+                v => new HexGridSettings(
+                    v.Value.Trace,
+                    v.Value.RingCount
+                )
+            );
     }
 
     [Test]
@@ -67,7 +193,7 @@ public class ScriptGeneratorTests
                 }
             };
         };
-        
+
         var codeHandler = delegate(string command, string code, int key, int slotKey)
         {
             return new
@@ -85,7 +211,7 @@ public class ScriptGeneratorTests
                 key = $"{key}"
             };
         };
-        
+
         var sb = new StringBuilder();
         sb.AppendLine("local sagaMap = {}");
         sb.AppendLine("local foxMap = {}");
@@ -101,10 +227,10 @@ public class ScriptGeneratorTests
         {
             var result = generator.GenerateGrid(
                 new IHexGridGenerator.Settings(
-                    kvp.Value.Item1,
-                    kvp.Value.Item2,
+                    kvp.Value.TraceResult.Start.Vector3ToPosition(),
+                    kvp.Value.TraceResult.End.Vector3ToPosition(),
                     true,
-                    5
+                    kvp.Value.RingCount
                 )
             );
 
@@ -112,7 +238,7 @@ public class ScriptGeneratorTests
                 .ToLower();
             var foxCode = result.WaypointLines.ToFoxDataBankString("FF10F0", "10FFF0");
             var sagaCode = result.WaypointLines.ToSagaDataBankString();
-            
+
             sb.AppendLine($"sagaMap[\"{kvp.Key}\"] = '{sagaCode}'");
             sb.AppendLine($"foxMap[\"{kvp.Key}\"] = '{foxCode}'");
 
@@ -121,25 +247,26 @@ public class ScriptGeneratorTests
             foxCodeSb.AppendLine("db.setStringValue('SagaRoutes', '')");
             foxCodeSb.AppendLine("db.setStringValue('savemarks', value)");
             foxCodeSb.AppendLine($"system.print('FOX {kvp.Key} SET')");
-            
+
             var sagaCodeSb = new StringBuilder();
             sagaCodeSb.AppendLine($"local value = '{sagaCode}'");
             sagaCodeSb.AppendLine("db.setStringValue('savemarks', '')");
             sagaCodeSb.AppendLine("db.setStringValue('SagaRoutes', value)");
             sagaCodeSb.AppendLine($"system.print('SAGA {kvp.Key} SET')");
-            
+
             commands.Add(codeHandler($"set fox {commandName}", foxCodeSb.ToString(), key, -4));
-            commands.Add(codeHandler($"set saga {commandName}", sagaCodeSb.ToString(), key + 1, -4));
+            // commands.Add(codeHandler($"set saga {commandName}", sagaCodeSb.ToString(), key + 1, -4));
 
             commandNames.Add($"set fox {commandName}");
-            commandNames.Add($"set saga {commandName}");
+            // commandNames.Add($"set saga {commandName}");
 
             key += 2;
         }
 
         commands.Add(new
         {
-            code = $"system.print('AVAILABLE COMMANDS:')\n{string.Join("\n", commandNames.Select(x => $"system.print('{x}')"))}",
+            code =
+                $"system.print('AVAILABLE COMMANDS:')\n{string.Join("\n", commandNames.Select(x => $"system.print('{x}')"))}",
             filter = new
             {
                 args = Array.Empty<object>(),
@@ -148,7 +275,7 @@ public class ScriptGeneratorTests
             },
             key = $"{key + 1}"
         });
-        
+
         sb.AppendLine("commandMap[\"fox\"] = foxMap");
         sb.AppendLine("commandMap[\"saga\"] = sagaMap");
 
@@ -179,8 +306,9 @@ public class ScriptGeneratorTests
             events = Array.Empty<object>()
         };
 
-
         var luaScriptString = JToken.FromObject(scriptObj).ToString();
+        
+        
         Console.WriteLine(luaScriptString);
     }
 }

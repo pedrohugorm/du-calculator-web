@@ -16,14 +16,12 @@ public class HexRingGeneratorTests
         var assertVectorHashSet = new HashSet<Vector3>
         {
             new(0f, 0f, 0f),
-            new(0, -3, 1.7320508f),
             new(0, 0, 3.4641016f),
             new(0, 3, 1.7320508f),
             new(0, 3, -1.7320508f),
             new(0, 0, -3.4641016f),
             new(0, -3, -1.7320508f),
             new(0, -3, 1.7320508f),
-            new(0, -6, 3.4641016f),
             new(0, -3, 5.196152f),
             new(0, 0, 6.928203f),
             new(0, 3, 5.196152f),
@@ -36,7 +34,6 @@ public class HexRingGeneratorTests
             new(0, -6, -3.4641016f),
             new(0, -6, 0),
             new(0, -6, 3.4641016f),
-            new(0, -9, 5.196152f),
             new(0, -6, 6.928203f),
             new(0, -3, 8.660254f),
             new(0, 0, 10.392304f),
@@ -62,11 +59,18 @@ public class HexRingGeneratorTests
             {
                 RingCount = 3
             }
-        );
+        ).ToList();
+        
+        Assert.That(hexPositions, Has.Count.EqualTo(1 + 6 + 2 * 6 + 3 * 6));
 
+        var confirmMap = assertVectorHashSet.ToDictionary(k => k, v => 0);
+        
         foreach (var hp in hexPositions)
         {
             Assert.That(assertVectorHashSet, Does.Contain(hp));
+            confirmMap[hp]++;
         }
+
+        Assert.That(confirmMap.All(x => x.Value == 1));
     }
 }

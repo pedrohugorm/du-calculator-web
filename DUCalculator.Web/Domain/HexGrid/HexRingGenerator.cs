@@ -26,7 +26,6 @@ public static class HexRingGenerator
         {
             var hexesPerSide = ring + 1;
             var currentHexPos = new Vector3(0, -hexBaseSize, hexFaceRadius) * ring;
-            hexPositions.Add(currentHexPos);
             
             for (var side = 1; side <= 6; side++)
             {
