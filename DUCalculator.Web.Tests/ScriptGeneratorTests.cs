@@ -212,12 +212,6 @@ public class ScriptGeneratorTests
             };
         };
 
-        var sb = new StringBuilder();
-        sb.AppendLine("local sagaMap = {}");
-        sb.AppendLine("local foxMap = {}");
-        sb.AppendLine("local commandMap = {}");
-        sb.AppendLine();
-
         var commandNames = new List<string>();
         var commands = new List<object>();
         var generator = new OffsetBasedHexGridGenerator();
@@ -236,16 +230,12 @@ public class ScriptGeneratorTests
 
             var commandName = kvp.Key.Replace(" ", "")
                 .ToLower();
-            var foxCode = result.WaypointLines.ToFoxDataBankString("FF10F0", "10FFF0");
+            var foxCode = result.WaypointLines.ToFoxSetPositionsScript("FF10F0", "10FFF0");
             var sagaCode = result.WaypointLines.ToSagaDataBankString();
 
-            sb.AppendLine($"sagaMap[\"{kvp.Key}\"] = '{sagaCode}'");
-            sb.AppendLine($"foxMap[\"{kvp.Key}\"] = '{foxCode}'");
-
             var foxCodeSb = new StringBuilder();
-            foxCodeSb.AppendLine($"local value = '{foxCode}'");
             foxCodeSb.AppendLine("db.setStringValue('SagaRoutes', '')");
-            foxCodeSb.AppendLine("db.setStringValue('savemarks', value)");
+            foxCodeSb.AppendLine(foxCode);
             foxCodeSb.AppendLine($"system.print('FOX {kvp.Key} SET')");
 
             var sagaCodeSb = new StringBuilder();
@@ -276,11 +266,6 @@ public class ScriptGeneratorTests
             key = $"{key + 1}"
         });
 
-        sb.AppendLine("commandMap[\"fox\"] = foxMap");
-        sb.AppendLine("commandMap[\"saga\"] = sagaMap");
-
-        var scriptString = sb.ToString();
-        // Console.WriteLine(scriptString);
         dynamic scriptObj = new
         {
             slots = new Dictionary<string, dynamic>
@@ -306,9 +291,13 @@ public class ScriptGeneratorTests
             events = Array.Empty<object>()
         };
 
-        var luaScriptString = JToken.FromObject(scriptObj).ToString();
+        var luaScriptString = JToken.FromObject((object)scriptObj).ToString();
         
         
         Console.WriteLine(luaScriptString);
+
+        var bytes = Encoding.Default.GetBytes(luaScriptString);
+        var kb = bytes.Length / 1024;
+        Console.WriteLine($"{kb} KB");
     }
 }
