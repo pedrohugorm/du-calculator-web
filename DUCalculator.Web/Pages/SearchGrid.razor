@@ -1,0 +1,134 @@
+﻿@page "/search-grid"
+@using DUCalculator.Web.Domain.HexGrid
+@inject ISearchGridScriptGenerator SearchGridScriptGenerator
+@inject IJSRuntime JS
+
+@code {
+
+    private readonly List<SearchGridScriptGenerator.Entry> _entries = new();
+    private SearchGridScriptGenerator.ScriptResult _result = new(false, "", "");
+
+    private void HandleSubmit()
+    {
+        if (_entries.Any(x => !x.IsValid))
+        {
+            return;
+        }
+
+        _result = SearchGridScriptGenerator.GenerateScript(
+            new SearchGridScriptGenerator.ScriptGenerationOptions(
+                _entries
+                )
+            );
+    }
+
+    private void Clear()
+    {
+        _result = new SearchGridScriptGenerator.ScriptResult(false, "", "");
+        _entries.Clear();
+    }
+
+    private void Copy(string value)
+    {
+        JS.InvokeVoidAsync("copyToClipboard", value);
+    }
+
+    private void HandleAdd()
+    {
+        _entries.Add(
+            new SearchGridScriptGenerator.Entry(
+                "",
+                "",
+                "",
+                20,
+                100,
+                5
+                )
+            );
+    }
+
+    private void Remove(SearchGridScriptGenerator.Entry entry)
+    {
+        _entries.Remove(entry);
+    }
+}
+
+<PageTitle>Search Grid</PageTitle>
+
+<div class="console-container">
+    @if (_result.Success)
+    {
+        <div class="console-output">
+            <button type="button" @onclick="() => Copy(_result.SagaScript)" class="btn btn-dark">Copy Saga (@(_result.GetSagaScriptSizeBytes() / 1024) kb)</button>
+            <button type="button" @onclick="() => Copy(_result.FoxScript)" class="btn btn-dark">Copy Fox (@(_result.GetFoxScriptSizeBytes() / 1024) kb)</button>
+        </div>
+    }
+    <div class="console-input">
+        <form @onsubmit="HandleSubmit">
+            <div class="container">
+                @foreach (var entry in _entries)
+                {
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group col space-bottom">
+                                <label>Name</label>
+                                <input type="text" class="form-control @(!entry.IsNameValid ? "invalid" : "")"
+                                       placeholder="Name" @bind="entry.Name"/>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group col space-bottom">
+                                <label>Start Pos</label>
+                                <input type="text" class="form-control @(!entry.IsStartPosValid ? "invalid" : "")"
+                                       placeholder="Start Position" @bind="entry.StartPos"/>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group col space-bottom">
+                                <label>End Pos</label>
+                                <input type="text" class="form-control @(!entry.IsEndPosValid ? "invalid" : "")"
+                                       placeholder="End Position" @bind="entry.EndPos"/>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group col space-bottom">
+                                <label>Min SU (from End Pos)</label>
+                                <input type="number" class="form-control" placeholder="Min SU" @bind="entry.MinSu"/>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group col space-bottom">
+                                <label>Max SU (from End Pos)</label>
+                                <input type="number" class="form-control" placeholder="Max SU" @bind="entry.MaxSu"/>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group col space-bottom">
+                                <label>Rings</label>
+                                <input type="number" class="form-control @(!entry.IsRingCountValid ? "invalid" : "")" placeholder="Rings" @bind="entry.RingCount"/>
+                            </div>
+                        </div>
+                        <div class="col-6 align-content-end">
+                            <button type="button" class="btn btn-outline-danger" @onclick="() => Remove(entry)">Remove</button>
+                        </div>
+                        <div class="col-12">
+                            <hr/>
+                        </div>
+                    </div>
+                }
+                <div class="row">
+                    <div class="col-8">&nbsp;</div>
+                    <div class="col-2 align-content-end">
+                        <button type="submit" class="btn btn-danger">Generate Scripts</button>
+                    </div>
+                    <div class="col-1 align-content-end">
+                        <button type="button" class="btn btn-secondary" @onclick="HandleAdd">Add</button>
+                    </div>
+                    <div class="col-1 align-content-end">
+                        <button type="button" class="btn btn-danger" @onclick="Clear">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -46,14 +46,17 @@ public static class FoxWaypointExtensions
         sb.AppendLine("local i = table.insert");
         sb.AppendLine($"local a = \"{colorAHex}\"");
         sb.AppendLine($"local b = \"{colorBHex}\"");
+        sb.AppendLine("local c = {{}}");
+        sb.AppendLine("c[\"A\"] = a");
+        sb.AppendLine("c[\"B\"] = b");
 
         foreach (var line in waypointLines)
         {
             var startV = line.StartWaypoint.Position.PositionToVector3();
             var endV = line.EndWaypoint.Position.PositionToVector3();
 
-            sb.AppendLine($"i(v,{{n=\"{line.StartWaypoint.Name}\",p={{{startV.X:F0},{startV.Y:F0},{startV.Z:F0}}},c=a}})");
-            sb.AppendLine($"i(v,{{n=\"{line.EndWaypoint.Name}\",p={{{endV.X:F0},{endV.Y:F0},{endV.Z:F0}}},c=b}})");
+            sb.AppendLine($"i(v,{{n=\"{line.StartWaypoint.Name}\",p={{{startV.X:F0},{startV.Y:F0},{startV.Z:F0}}},c=c.{line.StartWaypoint.Type}}})");
+            sb.AppendLine($"i(v,{{n=\"{line.EndWaypoint.Name}\",p={{{endV.X:F0},{endV.Y:F0},{endV.Z:F0}}},c=c.{line.EndWaypoint.Type}}})");
         }
 
         sb.AppendLine("for k,vp in ipairs(v) do");
