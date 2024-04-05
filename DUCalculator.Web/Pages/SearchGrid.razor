@@ -5,8 +5,9 @@
 
 @code {
 
-    private readonly List<SearchGridScriptGenerator.Entry> _entries = new();
+    private readonly List<SearchGridScriptGenerator.Entry> _entries = new() { DefaultEntry() };
     private SearchGridScriptGenerator.ScriptResult _result = new(false, "", "");
+    private static SearchGridScriptGenerator.Entry DefaultEntry() => new("", "", "", 20, 100, 4);
 
     private void HandleSubmit()
     {
@@ -35,22 +36,14 @@
 
     private void HandleAdd()
     {
-        _entries.Add(
-            new SearchGridScriptGenerator.Entry(
-                "",
-                "",
-                "",
-                20,
-                100,
-                5
-                )
-            );
+        _entries.Add(DefaultEntry());
     }
 
     private void Remove(SearchGridScriptGenerator.Entry entry)
     {
         _entries.Remove(entry);
     }
+
 }
 
 <PageTitle>Search Grid</PageTitle>
