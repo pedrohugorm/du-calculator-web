@@ -212,6 +212,47 @@
 {
     
 }
+/* /Pages/SearchGrid.razor.rz.scp.css */
+.console-container[b-0zgpdagxmr] {
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 1em;
+    color: rgba(255, 255, 255);
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.console-output[b-0zgpdagxmr] {
+    flex: 1;
+
+    padding-bottom: 1em;
+}
+
+.console-input[b-0zgpdagxmr] {
+    position: sticky;
+    bottom: 0;
+}
+
+.waypoint-position[b-0zgpdagxmr] {
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    background-color: rgba(0,0,0, 0.4);
+    padding: 4px;
+    border-radius: 2px;
+}
+
+.waypoint-position:hover[b-0zgpdagxmr] {
+    text-decoration: underline;
+}
+
+.copied-check[b-0zgpdagxmr] {
+    background-color: lawngreen;
+    color: black;
+    border-radius: 2px;
+    padding: 4px;
+}
 /* /Pages/TravelRouter.razor.rz.scp.css */
 .console-container[b-191nzb9fgh] {
     background-color: rgba(0, 0, 0, 0.9);
