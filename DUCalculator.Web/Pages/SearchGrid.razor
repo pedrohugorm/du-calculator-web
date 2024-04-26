@@ -6,10 +6,11 @@
 @code {
 
     private readonly List<SearchGridScriptGenerator.Entry> _entries = new() { DefaultEntry() };
-    private SearchGridScriptGenerator.ScriptResult _result = new(false, "", "");
+    private SearchGridScriptGenerator.ScriptResult _result = new(false, "", "", "");
     private static SearchGridScriptGenerator.Entry DefaultEntry() => new("", "", "", 20, 100, 4);
+    private string _deadRankScriptUrl;
 
-    private void HandleSubmit()
+    private async Task HandleSubmit()
     {
         if (_entries.Any(x => !x.IsValid))
         {
@@ -21,17 +22,24 @@
                 _entries
                 )
             );
+
+        _deadRankScriptUrl = await GetFileDownloadUrl(_result.DeadRankScript);
     }
 
     private void Clear()
     {
-        _result = new SearchGridScriptGenerator.ScriptResult(false, "", "");
+        _result = new SearchGridScriptGenerator.ScriptResult(false, "", "", "");
         _entries.Clear();
     }
 
     private void Copy(string value)
     {
         JS.InvokeVoidAsync("copyToClipboard", value);
+    }
+
+    private async Task<string> GetFileDownloadUrl(string fileContents)
+    {
+        return await JS.InvokeAsync<string>("createTextFileWithContents", new object[] { fileContents });
     }
 
     private void HandleAdd()
@@ -54,6 +62,7 @@
         <div class="console-output">
             <button type="button" @onclick="() => Copy(_result.SagaScript)" class="btn btn-dark">Copy Saga (@(_result.GetSagaScriptSizeBytes() / 1024) kb)</button>
             <button type="button" @onclick="() => Copy(_result.FoxScript)" class="btn btn-dark">Copy Fox (@(_result.GetFoxScriptSizeBytes() / 1024) kb)</button>
+            <a href="@_deadRankScriptUrl" download="search_grid.lua" target="_blank" class="btn btn-dark">Download DeadRank (@(_result.GetDeadRankScriptSizeBytes() / 1024) kb)</a>
         </div>
     }
     <div class="console-input">

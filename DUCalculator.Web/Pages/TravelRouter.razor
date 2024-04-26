@@ -45,6 +45,7 @@
         {
             var positions = PositionListParser.ParseText(_positions)
                 .Where(np => !_deDupedPositionsParsed.Contains(np.Position))
+                .DistinctBy(k => k.Name)
                 .ToDictionary(k => k.Name, v => v);
 
             foreach (var kvp in positions)
@@ -126,6 +127,16 @@
         
         _copiedWaypoints.TryAdd("fox", true);
     }
+    
+    private void CopyDeadRank()
+    {
+        var sb = new StringBuilder();
+        sb.Append(_waypoints.ToDeadRankRouteFile());
+        
+        JS.InvokeVoidAsync("copyToClipboard", sb.ToString());
+        
+        _copiedWaypoints.TryAdd("deadRank", true);
+    }
 
     private bool _reversed;
 }
@@ -142,6 +153,9 @@
                 </div>
                 <div class="col-2">
                     <button type="button" class="btn btn-dark" @onclick="CopySaga">Copy for Saga</button>
+                </div>
+                <div class="col-2">
+                    <button type="button" class="btn btn-dark" @onclick="CopyDeadRank">Copy for DeadRank</button>
                 </div>
             </div>
         }

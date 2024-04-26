@@ -25,6 +25,9 @@ public class SearchGridScriptGenerator : ISearchGridScriptGenerator
         var commandsSaga = new List<object>();
         var generator = new OffsetBasedHexGridGenerator();
 
+        var deadRankRouteFile = new StringBuilder();
+        deadRankRouteFile.AppendLine("return {");
+        
         var key = 0;
         foreach (var kvp in positionsByGridName)
         {
@@ -41,7 +44,7 @@ public class SearchGridScriptGenerator : ISearchGridScriptGenerator
                 .ToLower();
             var foxCode = result.WaypointLines.ToFoxSetPositionsScript("FF10F0", "10FFF0");
             var sagaCode = result.WaypointLines.ToSagaDataBankString();
-
+            
             var foxCodeSb = new StringBuilder();
             foxCodeSb.AppendLine("db.setStringValue('savemarks', '')");
             foxCodeSb.AppendLine(foxCode);
@@ -51,6 +54,9 @@ public class SearchGridScriptGenerator : ISearchGridScriptGenerator
             sagaCodeSb.AppendLine($"local value = '{sagaCode}'");
             sagaCodeSb.AppendLine("db.setStringValue('SagaRoutes', value)");
             sagaCodeSb.AppendLine($"system.print('SAGA {kvp.Key} SET')");
+            
+            var deadRank = result.WaypointLines.ToDeadRankRouteByName(commandName.Replace("-", "_"));
+            deadRankRouteFile.AppendLine(deadRank);
 
             commandsFox.Add(CodeHandler($"set {commandName}", foxCodeSb.ToString(), key, -4));
             commandsSaga.Add(CodeHandler($"set {commandName}", sagaCodeSb.ToString(), key + 1, -4));
@@ -83,10 +89,13 @@ public class SearchGridScriptGenerator : ISearchGridScriptGenerator
         var luaFoxScript = JsonSerializer.Serialize((object)foxScript, serializerOptions);
         var luaSagaScript = JsonSerializer.Serialize((object)sagaScript, serializerOptions);
 
+        deadRankRouteFile.AppendLine("}");
+        
         return new ScriptResult(
             true,
             luaSagaScript,
-            luaFoxScript
+            luaFoxScript,
+            deadRankRouteFile.ToString()
         );
     }
 
@@ -208,7 +217,8 @@ public class SearchGridScriptGenerator : ISearchGridScriptGenerator
     public record ScriptResult(
         bool Success,
         string SagaScript,
-        string FoxScript
+        string FoxScript,
+        string DeadRankScript
     )
     {
         public int GetSagaScriptSizeBytes()
@@ -220,6 +230,12 @@ public class SearchGridScriptGenerator : ISearchGridScriptGenerator
         public int GetFoxScriptSizeBytes()
         {
             var bytes = Encoding.Default.GetBytes(FoxScript);
+            return bytes.Length;
+        }
+        
+        public int GetDeadRankScriptSizeBytes()
+        {
+            var bytes = Encoding.Default.GetBytes(DeadRankScript);
             return bytes.Length;
         }
     }
