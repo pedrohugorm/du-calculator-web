@@ -24,8 +24,9 @@
     private readonly Dictionary<string, NamedPosition> _namedPositions = new();
     private readonly Dictionary<string, NamedPosition> _beaconPositions = new();
     private readonly Dictionary<string, bool> _copiedWaypoints = new();
+    private string _deadRankScriptUrl;
 
-    private void HandleSubmit()
+    private async Task HandleSubmit()
     {
         var offsetVector = new Vector3(_offsetX, _offsetY, _offsetZ);
         
@@ -70,6 +71,8 @@
             _namedPositions.Values,
             _beaconPositions.Values
             ).ToList();
+
+        _deadRankScriptUrl = await GetFileDownloadUrl(_waypoints.ToDeadRankRouteFile());
         
         foreach (var wp in _waypoints)
         {
@@ -128,14 +131,9 @@
         _copiedWaypoints.TryAdd("fox", true);
     }
     
-    private void CopyDeadRank()
+    private async Task<string> GetFileDownloadUrl(string fileContents)
     {
-        var sb = new StringBuilder();
-        sb.Append(_waypoints.ToDeadRankRouteFile());
-        
-        JS.InvokeVoidAsync("copyToClipboard", sb.ToString());
-        
-        _copiedWaypoints.TryAdd("deadRank", true);
+        return await JS.InvokeAsync<string>("createTextFileWithContents", new object[] { fileContents });
     }
 
     private bool _reversed;
@@ -155,7 +153,7 @@
                     <button type="button" class="btn btn-dark" @onclick="CopySaga">Copy for Saga</button>
                 </div>
                 <div class="col-2">
-                    <button type="button" class="btn btn-dark" @onclick="CopyDeadRank">Copy for DeadRank</button>
+                    <a class="btn btn-dark" href="@_deadRankScriptUrl" target="_blank" download="travelrouter.lua">Download for DeadRank</a>
                 </div>
             </div>
         }
